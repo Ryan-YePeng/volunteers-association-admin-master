@@ -1,83 +1,31 @@
 <template>
   <el-dialog
-          title="新增菜单"
-          width="620px"
+          title="新增活动"
+          width="500px"
           @close="cancel"
           :close-on-click-modal="false"
           :visible.sync="visible">
     <el-form :model="form" :rules="rules" ref="Form" label-width="80px" hide-required-asterisk>
-      <el-form-item label="菜单图标">
-        <el-popover
-                placement="bottom-start"
-                width="450"
-                trigger="click"
-                @show="$refs['iconSelect'].reset()"
-        >
-          <icon-select ref="iconSelect" @selected="selected"/>
-          <el-input slot="reference" v-model="form.icon" style="width: 450px;" placeholder="点击选择图标" readonly>
-            <svg-icon v-if="form.icon" slot="prefix" :icon-class="form.icon" class="el-input-icon"/>
-            <i v-else slot="prefix" class="el-icon-search el-input__icon"></i>
-          </el-input>
-        </el-popover>
+      <el-form-item label="名称" prop="name">
+        <el-input v-model="form.name"></el-input>
       </el-form-item>
-      <el-row>
-        <el-col :span="8">
-          <el-form-item label="外链菜单">
-            <el-radio-group v-model="form.iframe">
-              <el-radio-button label="true">是</el-radio-button>
-              <el-radio-button label="false">否</el-radio-button>
-            </el-radio-group>
-          </el-form-item>
-        </el-col>
-        <el-col :span="8">
-          <el-form-item label="菜单可见">
-            <el-radio-group v-model="form.hidden">
-              <el-radio-button label="false">是</el-radio-button>
-              <el-radio-button label="true">否</el-radio-button>
-            </el-radio-group>
-          </el-form-item>
-        </el-col>
-        <el-col :span="8">
-          <el-form-item label="菜单缓存">
-            <el-radio-group v-model="form.cache">
-              <el-radio-button label="true">是</el-radio-button>
-              <el-radio-button label="false">否</el-radio-button>
-            </el-radio-group>
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="12">
-          <el-form-item label="菜单标题" prop="title">
-            <el-input v-model="form.title"></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="权限标识">
-            <el-input v-model="form.permission"></el-input>
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="12">
-          <el-form-item label="路径名称">
-            <el-input v-model="form.name"></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="菜单排序" prop="sort">
-            <el-input-number
-                    v-model="form.sort"
-                    controls-position="right"
-                    :min="1">
-            </el-input-number>
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-form-item label="上级类目">
+      <el-form-item label="排序" prop="sort">
+        <el-input-number
+                v-model="form.sort"
+                controls-position="right"
+                :min="1">
+        </el-input-number>
+      </el-form-item>
+      <el-form-item label="状态">
+        <el-radio-group v-model="form.enabled">
+          <el-radio :label="true">启用</el-radio>
+          <el-radio :label="false">停用</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="所属部门" prop="deptId">
         <tree-select
-                v-model="form.pid"
-                :options="menu"
+                v-model="form.deptId"
+                :options="dept"
                 :normalizer="normalizer"
                 :default-expand-level="1"
                 placeholder=""/>
@@ -91,16 +39,14 @@
 </template>
 
 <script>
-  import IconSelect from '@/components/IconSelect'
   import TreeSelect from '@riophae/vue-treeselect'
-  import {addMenuApi} from '@/api/menu'
-  import {isEmpty} from "@/utils/common";
+  import {addJobApi} from '@/api/job'
 
   export default {
-    name: "AddMenu",
-    components: {IconSelect, TreeSelect},
+    name: "AddOngoingActivity",
+    components: {TreeSelect},
     props: {
-      menu: {
+      dept: {
         type: Array,
         default: []
       }
@@ -109,39 +55,30 @@
       return {
         normalizer(node) {
           return {
-            label: node.title
+            label: node.name
           }
         },
         visible: false,
         form: {
-          title: '',
-          permission: '',
           name: '',
-          icon: '',
-          iframe: false,
-          hidden: false,
-          cache: false,
           sort: 999,
-          pid: null
+          enabled: true,
+          deptId: null
         },
         rules: {
-          title: {required: true, message: '请输入标题', trigger: 'blur'},
-          sort: {required: true, message: '请输入排序', trigger: 'change'}
+          name: {required: true, message: '请输入名称', trigger: 'blur'},
+          sort: {required: true, message: '请输入排序', trigger: 'blur'},
+          deptId: {required: true, message: '请选择部门', trigger: 'blur'}
         }
       }
     },
     methods: {
-      selected(name) {
-        this.form.icon = name
-      },
       submitForm() {
         this.$refs['Form'].validate((valid) => {
           if (valid) {
             let data = {...this.form};
-            if (isEmpty(data.pid)) data.pid = 0;
-            data.name = data.name.trim();
             this.$refs.SubmitButton.start();
-            addMenuApi(data).then(() => {
+            addJobApi(data).then(() => {
               this.$refs.SubmitButton.stop();
               this.$emit('update');
               this.cancel()
@@ -162,9 +99,6 @@
   }
 </script>
 
-<style lang="scss" scoped>
-  .el-input-icon {
-    height: 32px;
-    width: 16px;
-  }
+<style scoped>
+
 </style>
