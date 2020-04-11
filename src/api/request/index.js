@@ -35,17 +35,16 @@ export const axiosD = url => {
 
 /**
  * @param {String} url 请求地址
- * @param {Array} param [1, 2, 3]
- * @description delete，删除多条数据。
+ * @param {Object} param {ids: [1, 2, 3], status: false}
+ * @param {String} method "delete put..."
+ * @description 批量操作数据。
  * */
-export const axiosDs = (url, param) => {
+export const axiosM = (url, param, method) => {
   return new Promise((resolve, reject) => {
     service({
-      method: "delete",
+      method: method,
       url: url,
-      params: {
-        ids: param
-      },
+      params: param,
       paramsSerializer: params => qs.stringify(params, {arrayFormat: 'repeat'})
     })
       .then(result => resolve(result))

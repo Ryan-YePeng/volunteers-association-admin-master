@@ -1,4 +1,4 @@
-import {axiosD, axiosDs, axiosF, axiosFs, axiosG, axiosK, axiosP} from "@/api/request";
+import {axiosD, axiosM, axiosF, axiosFs, axiosG, axiosK, axiosP} from "@/api/request";
 
 const addUserUrl = "admin/user/addUser"; // 新增用户
 const deleteUserUrl = "admin/user/delUser"; // 删除用户
@@ -10,7 +10,7 @@ const getOnlineUserUrl = "admin/user/online/pageOnLineUser?"; // 查询在线用
 const deleteOnlineUserUrl = "admin/user/online/kickOut?keys="; // 踢出用户
 
 export const addUserApi = data => axiosK(addUserUrl, data);
-export const deleteUserApi = data => axiosDs(deleteUserUrl, data);
+export const deleteUserApi = data => axiosM(deleteUserUrl, data, "delete");
 export const editUserApi = data => axiosP(editUserUrl, data);
 export const editAvatarApi = data => axiosF(editAvatarUrl, data);
 export const getUserListApi = data => axiosG(getUserListUrl + data);

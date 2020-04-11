@@ -159,14 +159,14 @@
         _this.visible = true
       },
       deleteUser(id) {
-        deleteUserApi([id])
-            .then(() => {
-              this.getUserList();
-              this.$refs[id].close()
-            })
-            .catch(() => {
-              this.$refs[id].stop();
-            })
+        deleteUserApi({ids: id})
+          .then(() => {
+            this.getUserList();
+            this.$refs[id].close()
+          })
+          .catch(() => {
+            this.$refs[id].stop();
+          })
       }
     }
   }
