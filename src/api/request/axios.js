@@ -1,7 +1,7 @@
 import axios from "axios";
 import router from "@/router";
 import store from "@/store";
-import {errorMessage, successMsg, errorMsg, msgBox} from "@/utils/EUI";
+import {errorMessage, successMsg, errorMsg} from "@/utils/EUI";
 import {isEmpty} from "@/utils/common";
 import {timeout} from "@/settings";
 
@@ -60,7 +60,7 @@ service.interceptors.response.use(
     if (status === 401) {
       if (errorStatus === status) return;
       errorStatus = status;
-      msgBox("登录状态已过期，您可以继续留在该页面，或者重新登录", "重新登录")
+      this.$msgBox("登录状态已过期，您可以继续留在该页面，或者重新登录", "重新登录", "系统提示")
         .then(() => router.push({name: "login"}))
         .catch(() => (errorStatus = null))
     } else if (status === 403) {
