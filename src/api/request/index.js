@@ -117,7 +117,7 @@ export const axiosJ = (url, param) => {
 /**
  * @param {String} url 请求地址
  * @param {Object} param {name: LiHua, age: 18}
- * @description post，JSON格式。
+ * @description put，JSON格式。
  * */
 export const axiosU = (url, param) => {
   return new Promise((resolve, reject) => {
