@@ -53,7 +53,7 @@
         return this.$store.getters.user
       },
       avatarUrl() {
-        return process.env.VUE_APP_BASE_URL + this.user.avatar
+        return process.env.VUE_APP_BASE_API + this.user.avatar
       }
     },
     methods: {

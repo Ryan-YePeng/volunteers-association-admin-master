@@ -60,7 +60,7 @@
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item label="路由名称">
+          <el-form-item label="路径名称">
             <el-input v-model="form.name"></el-input>
           </el-form-item>
         </el-col>

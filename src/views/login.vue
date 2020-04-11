@@ -3,7 +3,7 @@
     <div id="el-login-container">
       <el-form ref="Form" :model="form" :rules="rules" label-position="left" label-width="0px" class="login-form">
         <h3 class="title">
-          {{title}} 后台管理系统
+          {{title}} - 后台管理系统
         </h3>
         <el-form-item prop="username">
           <el-input v-model="form.username" type="text" auto-complete="off" placeholder="账号">
@@ -66,7 +66,7 @@
         rules: {
           username: {required: true, message: '请输入用户名', trigger: 'blur'},
           password: {required: true, message: '请输入密码', trigger: 'blur'},
-          code: {required: true, message: '请输入验证码', trigger: 'blur'},
+          code: {required: true, message: '请输入验证码', trigger: 'blur'}
         }
       }
     },
@@ -138,7 +138,9 @@
     justify-content: center;
     align-items: center;
     height: 100%;
-    background: url("../assets/background.png") no-repeat center center;
+    background: linear-gradient(0deg, #fff, #fff 31%, #9acff9 100%, #9acff9 0);
+    //background: linear-gradient(0deg, #9acff9, #9acff9 31%, #fff 100%, #fff 0);
+    // background: url("../assets/background.png") no-repeat center center;
     background-size: cover;
 
     .title {

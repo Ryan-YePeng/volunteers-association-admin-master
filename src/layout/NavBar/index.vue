@@ -42,7 +42,7 @@
     },
     computed: {
       avatarUrl() {
-        return process.env.VUE_APP_BASE_URL + this.$store.getters.user.avatar
+        return process.env.VUE_APP_BASE_API + this.$store.getters.user.avatar
       }
     },
     methods: {
