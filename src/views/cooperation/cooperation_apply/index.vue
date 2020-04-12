@@ -1,7 +1,9 @@
 <template>
   <el-card class="box-card">
     <div slot="header" class="clearfix">
-      <span>审核列表</span>
+      <el-input placeholder="输入资助方搜索" v-model="searchName" clearable class="w-200"
+                @keyup.enter.native="getCooperationList"/>
+      <el-button type="success" class="el-icon-search ml-5" @click="getCooperationList">搜索</el-button>
       <el-button
           class="float-right ml-5"
           type="danger"
@@ -24,14 +26,17 @@
     <div>
       <el-table v-loading="isTableLoading" :data="formData" @selection-change="getSelected">
         <el-table-column type="selection" width="55"></el-table-column>
-        <el-table-column prop="name" label="发起者"></el-table-column>
-        <el-table-column prop="phone" label="电话"></el-table-column>
-        <el-table-column prop="number" label="报名人数"></el-table-column>
-        <el-table-column prop="maxNumber" label="限报人数"></el-table-column>
-        <el-table-column prop="place" label="地点"></el-table-column>
-        <el-table-column prop="time" label="时间">
+        <el-table-column prop="name" label="资助方"></el-table-column>
+        <el-table-column prop="way" label="资助类型">
           <template slot-scope="scope">
-            <span>{{scope.row.createTime | formatDateTime}}</span>
+            {{scope.row.way === 0 ? '资金' : '物资'}}
+          </template>
+        </el-table-column>
+        <el-table-column prop="phone" label="电话"></el-table-column>
+        <el-table-column prop="unit" label="公司单位"></el-table-column>
+        <el-table-column label="资助活动">
+          <template slot-scope="scope">
+            {{scope.row.activityName ? scope.row.activityName : '无'}}
           </template>
         </el-table-column>
         <el-table-column label="操作" fixed="right" align="center" width="150">
@@ -40,54 +45,55 @@
             <delete-button
                 :ref="scope.row.id"
                 :id="scope.row.id"
-                width="100"
-                msg="确认拒绝申请？"
-                @start="deleteRun"/>
+                @start="deleteCooperation"/>
           </template>
         </el-table-column>
       </el-table>
     </div>
-    <pagination ref="Pagination" @getNewData="getRunList"></pagination>
+    <pagination ref="Pagination" @getNewData="getCooperationList"></pagination>
   </el-card>
 </template>
 
 <script>
-  import {delCallRunApi, getRunListApi, checkRunApi} from '@/api/run'
+  import {cooperationCheckApi, delCooperationApi, pageCooperationApi} from '@/api/cooperation'
 
   export default {
-    name: "RunAudit",
+    name: "CooperationApply",
     data() {
       return {
         isTableLoading: false,
         formData: [],
+        searchName: '',
         isMoreDisabled: true,
         deleteList: []
       }
     },
     mounted() {
-      this.getRunList()
+      this.getCooperationList()
     },
     methods: {
-      getRunList() { // 0失败 1审核中 2成功
+      getCooperationList() { // 0失败 1审核中 2成功
         this.isTableLoading = true;
         let pagination = this.$refs.Pagination;
-        let param = `current=${pagination.current}&size=${pagination.size}&state=1`;
-        getRunListApi(param).then(result => {
+        let param = `current=${pagination.current}&size=${pagination.size}&state=1&name=${this.searchName}`;
+        pageCooperationApi(param).then(result => {
           this.isTableLoading = false;
-          let response = result.resultParam.callRunPage;
+          let response = result.resultParam.cooperationPage;
           this.formData = response.records;
           pagination.total = response.total;
         })
       },
       pass(id) {
-        checkRunApi({ids: id, state: 2}).then(() => {
-          this.getRunList()
-        })
+        this.$msgBox('确定通过审核吗？').then(() => {
+          cooperationCheckApi({ids: id, state: 2}).then(() => {
+            this.getCooperationList()
+          })
+        });
       },
-      deleteRun(id) {
-        delCallRunApi({ids: id})
+      deleteCooperation(id) {
+        delCooperationApi({ids: id})
           .then(() => {
-            this.getRunList();
+            this.getCooperationList();
             this.$refs[id].close()
           })
           .catch(() => {
@@ -100,15 +106,15 @@
       },
       rejectMore() {
         this.$msgBox('确定批量拒绝审核操作吗？').then(() => {
-          checkRunApi({ids: [this.deleteList], state: 0}).then(() => {
-            this.getRunList()
+          cooperationCheckApi({ids: [this.deleteList], state: 0}).then(() => {
+            this.getCooperationList()
           })
         })
       },
       passMore() {
         this.$msgBox('确定批量通过审核操作吗？').then(() => {
-          checkRunApi({ids: [this.deleteList], state: 2}).then(() => {
-            this.getRunList()
+          cooperationCheckApi({ids: [this.deleteList], state: 2}).then(() => {
+            this.getCooperationList()
           })
         })
       }
@@ -119,3 +125,4 @@
 <style scoped>
 
 </style>
+

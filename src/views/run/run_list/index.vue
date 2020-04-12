@@ -6,7 +6,15 @@
         <el-option label="审核失败" value="0"></el-option>
       </el-select>
       <el-button type="success" class="el-icon-search ml-5" @click="getRunList">搜索</el-button>
-      <el-button class="float-right" type="danger" icon="el-icon-delete" @click="deleteMore">批量删除</el-button>
+      <el-button
+          class="float-right"
+          type="danger"
+          icon="el-icon-delete"
+          @click="deleteMore"
+          :disabled="isDeleteMoreDisabled"
+      >
+        批量删除
+      </el-button>
     </div>
     <div>
       <el-table v-loading="isTableLoading" :data="formData" @selection-change="getSelected">
@@ -24,9 +32,9 @@
         <el-table-column label="操作" fixed="right" align="center" width="150">
           <template slot-scope="scope">
             <delete-button
-                    :ref="scope.row.id"
-                    :id="scope.row.id"
-                    @start="deleteRun"/>
+                :ref="scope.row.id"
+                :id="scope.row.id"
+                @start="deleteRun"/>
           </template>
         </el-table-column>
       </el-table>
@@ -44,7 +52,6 @@
       return {
         isTableLoading: false,
         formData: [],
-        tree: [],
         searchState: '2',
         isDeleteMoreDisabled: true,
         deleteList: []
