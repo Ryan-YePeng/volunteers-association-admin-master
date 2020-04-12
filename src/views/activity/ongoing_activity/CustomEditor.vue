@@ -24,7 +24,6 @@
   import "tinymce/plugins/codesample"; // 插入代码
 
   import {uploadPicturePlusApi} from '@/api/file'
-  import { isEmpty } from "@/utils/common";
 
   export default {
     name: "CustomEditor",
@@ -81,7 +80,8 @@
           // 图片上传
           images_upload_handler: function(blobInfo, success, failure) {
             let data = {};
-            data.pic = blobInfo.blob();
+            data.file = blobInfo.blob();
+            data.typePath = 'activity';
             uploadPicturePlusApi(data).then(result => {
               let response = result.data.path;
               let url = _this.pictureBaseUrl + response;
@@ -98,10 +98,10 @@
       }
     },
     beforeDestroy() {
-      let list = document.querySelectorAll('.custom-editor');
-      list.forEach(item => {
-        item.style.visibility = 'hidden'
-      });
+      // let list = document.querySelectorAll('.custom-editor');
+      // list.forEach(item => {
+      //   item.style.visibility = 'hidden'
+      // });
       tinymce.remove();
     }
   };

@@ -1,84 +1,151 @@
 <template>
-  <el-dialog
-          title="新增活动"
-          width="500px"
-          @close="cancel"
-          :close-on-click-modal="false"
-          :visible.sync="visible">
-    <el-form :model="form" :rules="rules" ref="Form" label-width="80px" hide-required-asterisk>
-      <el-form-item label="名称" prop="name">
-        <el-input v-model="form.name"></el-input>
-      </el-form-item>
-      <el-form-item label="排序" prop="sort">
-        <el-input-number
-                v-model="form.sort"
-                controls-position="right"
-                :min="1">
-        </el-input-number>
-      </el-form-item>
-      <el-form-item label="状态">
-        <el-radio-group v-model="form.enabled">
-          <el-radio :label="true">启用</el-radio>
-          <el-radio :label="false">停用</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="所属部门" prop="deptId">
-        <tree-select
-                v-model="form.deptId"
-                :options="dept"
-                :normalizer="normalizer"
-                :default-expand-level="1"
-                placeholder=""/>
-      </el-form-item>
-    </el-form>
-    <div slot="footer" class="dialog-footer">
-      <el-button @click="visible = false">取 消</el-button>
-      <submit-button ref="SubmitButton" @submit="submitForm"/>
+  <el-card class="box-card">
+    <div slot="header" class="clearfix">
+      <el-page-header @back="cancel" content="添加活动" style="height: 32px;line-height: 32px;"></el-page-header>
     </div>
-  </el-dialog>
+    <el-form :model="form" class="addActivity" :rules="rules" ref="Form" label-width="7rem" hide-required-asterisk>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="活动名称" prop="title">
+            <el-input v-model="form.title"></el-input>
+          </el-form-item>
+          <el-form-item label="联系方式" prop="phone">
+            <el-input v-model="form.phone"></el-input>
+          </el-form-item>
+          <el-form-item label="负责人" prop="name">
+            <el-input v-model="form.name"></el-input>
+          </el-form-item>
+          <el-form-item label="活动地点" prop="address">
+            <el-input v-model="form.address"></el-input>
+          </el-form-item>
+          <el-form-item label="活动时间" prop="ActivityTime">
+            <el-date-picker
+                v-model="form.ActivityTime"
+                type="datetimerange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+            </el-date-picker>
+          </el-form-item>
+          <el-form-item label="报名时间" prop="RegisterTime">
+            <el-date-picker
+                v-model="form.RegisterTime"
+                type="datetimerange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+            </el-date-picker>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="是否收费" prop="isPrice">
+            <el-switch
+                v-model="form.isPrice"
+                active-color="#13ce66">
+            </el-switch>
+          </el-form-item>
+          <el-form-item label="个人费用" prop="ownPrice" v-show="form.isPrice">
+            <el-input-number v-model="form.ownPrice" :step="0.01" step-strictly
+                             controls-position="right"></el-input-number>
+          </el-form-item>
+          <el-form-item label="团体费用" prop="groupPrice" v-show="form.isPrice">
+            <el-input-number v-model="form.groupPrice" :step="0.01" step-strictly
+                             controls-position="right"></el-input-number>
+          </el-form-item>
+          <el-form-item label="限报人数" prop="maxNumber">
+            <el-input-number v-model="form.maxNumber" controls-position="right"></el-input-number>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="24">
+          <el-form-item label="封面图片" prop="cover">
+            <activity-cover-uploader-plus @getImage="getImage" ref="coverUploader"></activity-cover-uploader-plus>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="24">
+          <el-form-item label="活动简介" prop="content"></el-form-item>
+        </el-col>
+      </el-row>
+    </el-form>
+    <custom-editor :editor-key="0" ref="Editor"></custom-editor>
+    <submit-button class="submitBtn float-right " ref="SubmitButton" @submit="submitForm"/>
+  </el-card>
+
 </template>
 
 <script>
-  import TreeSelect from '@riophae/vue-treeselect'
-  import {addJobApi} from '@/api/job'
+  import ActivityCoverUploaderPlus from './cover_uploader';
+  import {validatePhone} from "@/utils/validate";
+  import {addActivityApi} from "@/api/activity";
+  import {formatDateTime} from "@/utils/common";
+  import CustomEditor from './CustomEditor'
 
   export default {
     name: "AddOngoingActivity",
-    components: {TreeSelect},
-    props: {
-      dept: {
-        type: Array,
-        default: []
-      }
-    },
+    components: {ActivityCoverUploaderPlus, CustomEditor},
+    props: {},
     data() {
       return {
-        normalizer(node) {
-          return {
-            label: node.name
-          }
-        },
         visible: false,
         form: {
-          name: '',
-          sort: 999,
-          enabled: true,
-          deptId: null
+          ActivityTime: [],
+          RegisterTime: [],
+          title: '',
+          beginTime: '',
+          maxNumber: '',
+          endTime: '',
+          registerBeginTime: '',
+          registerEndTime: '',
+          content: '',
+          cover: '',
+          isPrice: false,
+          address: '',
+          phone: '',
+          ownPrice: 0,
+          groupPrice: 0,
+          name: ''
         },
         rules: {
-          name: {required: true, message: '请输入名称', trigger: 'blur'},
-          sort: {required: true, message: '请输入排序', trigger: 'blur'},
-          deptId: {required: true, message: '请选择部门', trigger: 'blur'}
+          title: {required: true, message: '请输入名称', trigger: 'blur'},
+          address: {required: true, message: '请输入地址', trigger: 'blur'},
+          name: {required: true, message: '请输入负责人姓名', trigger: 'blur'},
+          ActivityTime: {type: 'array', message: '请选择活动时间', required: true, trigger: 'blur'},
+          RegisterTime: {type: 'array', message: '请选择报名时间', required: true, trigger: 'blur'},
+          price: {required: true, message: '请输入价格', trigger: 'blur'},
+          phone: {validator: validatePhone, trigger: 'blur'},
+          cover: {required: true, message: '请选择封面图片', trigger: 'blur'}
         }
       }
+    },
+    watch: {
+      'form.ActivityTime'(v) {
+        console.log(v);
+        this.form.beginTime = formatDateTime(v[0]);
+        this.form.endTime = formatDateTime(v[1]);
+      },
+      'form.RegisterTime'(v) {
+        this.form.registerBeginTime = formatDateTime(v[0]);
+        this.form.registerEndTime = formatDateTime(v[1]);
+      },
+      'form.isPrice'(v) {
+        if (!v) this.form.ownPrice = this.form.groupPrice = 0;
+      },
+      immediate: true,
+      deep: true
     },
     methods: {
       submitForm() {
         this.$refs['Form'].validate((valid) => {
           if (valid) {
             let data = {...this.form};
+            data.content = this.$refs.Editor.getContent();
             this.$refs.SubmitButton.start();
-            addJobApi(data).then(() => {
+            delete data.ActivityTime;
+            delete data.RegisterTime;
+            addActivityApi(data).then(() => {
               this.$refs.SubmitButton.stop();
               this.$emit('update');
               this.cancel()
@@ -90,15 +157,32 @@
           }
         });
       },
+      getImage(value) {
+        this.form.cover = value;
+        this.$refs.Form.validateField('cover');
+        console.log(value)
+      },
       cancel() {
-        this.visible = false;
+        this.$parent.addFlag = false;
         Object.assign(this.$data.form, this.$options.data().form);
-        this.$refs['Form'].resetFields()
+        this.$refs['coverUploader'].url = '';
+        this.$refs['Form'].resetFields();
+        this.$refs.Editor.setContent();
       }
     }
   }
 </script>
 
-<style scoped>
+<style lang="scss">
+  .addActivity {
+    padding: 20px 0;
 
+    .el-range-editor--small.el-input__inner {
+      width: 100%;
+    }
+
+    .submitBtn {
+      margin-right: 40px;
+    }
+  }
 </style>

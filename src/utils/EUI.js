@@ -50,11 +50,13 @@ import {
   MenuItemGroup,
   Checkbox,
   Tree,
-  Progress
+  Progress,
+  DatePicker
 } from 'element-ui';
 
 Vue.prototype.$ELEMENT = {size: store.getters.setting.layoutSize};
 
+Vue.component('ElDatePicker', DatePicker);
 Vue.component('ElButton', Button);
 Vue.component('ElContainer', Container);
 Vue.component('ElHeader', Header);
@@ -144,7 +146,7 @@ const errorNotify = msg => {
  * @param {String} confirmText 确认文字
  * @param {String} title 提示文字
  */
-const msgBox = (text = "确定执行此操作吗？", confirmText = "确定", title = "提示") => {
+export const msgBox = (text = "确定执行此操作吗？", confirmText = "确定", title = "提示") => {
   return new Promise((resolve, reject) => {
     MessageBox.confirm(text, title, {
       confirmButtonText: confirmText,

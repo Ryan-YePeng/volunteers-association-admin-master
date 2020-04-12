@@ -139,10 +139,14 @@ export function validateTelephone(rule, value, callback) {
 export function validatePhone(rule, value, callback) {
   const reg = /^[1][3,4,5,7,8][0-9]{9}$/;
   if (value === '' || value === undefined || value == null) {
-    callback()
+    if (value === '') {
+      callback(new Error('请输入手机号码'))
+    } else {
+      callback()
+    }
   } else {
     if ((!reg.test(value)) && value !== '') {
-      callback(new Error('请输入正确的电话号码'))
+      callback(new Error('请输入正确的手机号码'))
     } else {
       callback()
     }
@@ -162,4 +166,5 @@ export function validateIdNo(rule, value, callback) {
     }
   }
 }
+
 
