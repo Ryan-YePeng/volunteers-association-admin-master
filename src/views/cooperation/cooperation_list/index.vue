@@ -26,7 +26,12 @@
       </el-button>
     </div>
     <div>
-      <el-table v-loading="isTableLoading" :data="formData" @selection-change="getSelected">
+      <el-table
+          v-loading="isTableLoading"
+          :data="formData"
+          @selection-change="getSelected"
+          @row-click="rowClick"
+      >
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="name" label="资助方"></el-table-column>
         <el-table-column prop="way" label="资助类型">
@@ -83,6 +88,13 @@
           let response = result.resultParam.cooperationPage;
           this.formData = response.records;
           pagination.total = response.total;
+        })
+      },
+      rowClick(value) {
+        this.$router.push({
+          name: 'cooperation_detail',
+          query: {id: value.id},
+          params: {name: 'cooperation_list'}
         })
       },
       download() {

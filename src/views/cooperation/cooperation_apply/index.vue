@@ -24,7 +24,12 @@
       </el-button>
     </div>
     <div>
-      <el-table v-loading="isTableLoading" :data="formData" @selection-change="getSelected">
+      <el-table
+          v-loading="isTableLoading"
+          :data="formData"
+          @selection-change="getSelected"
+          @row-click="rowClick"
+      >
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="name" label="资助方"></el-table-column>
         <el-table-column prop="way" label="资助类型">
@@ -45,7 +50,8 @@
             <delete-button
                 :ref="scope.row.id"
                 :id="scope.row.id"
-                @start="deleteCooperation"/>
+                msg="确认拒绝该审核？"
+                @start="rejectCooperation"/>
           </template>
         </el-table-column>
       </el-table>
@@ -55,7 +61,7 @@
 </template>
 
 <script>
-  import {cooperationCheckApi, delCooperationApi, pageCooperationApi} from '@/api/cooperation'
+  import {cooperationCheckApi, pageCooperationApi} from '@/api/cooperation'
 
   export default {
     name: "CooperationApply",
@@ -83,6 +89,13 @@
           pagination.total = response.total;
         })
       },
+      rowClick(value) {
+        this.$router.push({
+          name: 'cooperation_detail',
+          query: {id: value.id},
+          params: {name: 'cooperation_apply'}
+        })
+      },
       pass(id) {
         this.$msgBox('确定通过审核吗？').then(() => {
           cooperationCheckApi({ids: id, state: 2}).then(() => {
@@ -90,8 +103,8 @@
           })
         });
       },
-      deleteCooperation(id) {
-        delCooperationApi({ids: id})
+      rejectCooperation(id) {
+        cooperationCheckApi({ids: id, state: 0})
           .then(() => {
             this.getCooperationList();
             this.$refs[id].close()
