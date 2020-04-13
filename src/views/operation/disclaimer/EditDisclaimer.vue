@@ -40,7 +40,7 @@
           language_url: "assets/tinymce/langs/zh_CN.js", //导入语言文件
           language: "zh_CN", //语言设置
           skin_url: "assets/tinymce/skins/ui/oxide", //主题样式
-          height: 250, //高度
+          height: 600, //高度
           menubar: false, // 最上方menu菜单
           browser_spellcheck: true, // 拼写检查
           branding: false, // 去水印
@@ -55,11 +55,6 @@
         }
       };
     },
-    computed: {
-      pictureBaseUrl() {
-        return process.env.VUE_APP_BASE_API;
-      }
-    },
     mounted() {
       this.init();
     },
@@ -73,23 +68,17 @@
         tinymce.activeEditor.setContent(value)
       },
       init() {
-        const _this = this;
         tinymce.init({
           // 默认配置
           ...this.DefaultInit,
           // 图片上传
-          images_upload_handler: function (blobInfo, success, failure) {
+          images_upload_handler: function (blobInfo, success) {
             let data = {};
             data.file = blobInfo.blob();
-            data.typePath = 'activity';
+            data.typePath = 'disclaimer';
             uploadPicturePlusApi(data).then(result => {
-              let response = result.data.path;
-              let url = _this.pictureBaseUrl + response;
-              if (result.status === 200) {
-                success(url);
-              } else {
-                failure("上传失败！");
-              }
+              let baseUrl = process.env.VUE_APP_BASE_API;
+              success(baseUrl + result.resultParam.uploadFilePath);
             });
           },
           // 挂载的DOM对象
