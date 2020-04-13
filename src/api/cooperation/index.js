@@ -1,5 +1,4 @@
-import {axiosG, axiosM} from "../request";
-import {axiosL} from "@/api/request";
+import {axiosL, axiosG, axiosM} from "../request";
 
 const cooperationCheckUrl = "cooperation/cooperationCheck"; // 审核商务合作
 const delCooperationUrl = "cooperation/delCooperation"; // 删除商务合作
