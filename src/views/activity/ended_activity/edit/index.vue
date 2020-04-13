@@ -1,10 +1,10 @@
 <template>
   <el-card class="box-card">
     <div slot="header" class="clearfix">
-      <el-page-header @back="cancel" content="活动详情" style="height: 32px;line-height: 32px;"></el-page-header>
+      <el-page-header @back="cancel" content="回顾详情" style="height: 32px;line-height: 32px;"></el-page-header>
     </div>
     <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-      <el-tab-pane label="活动详情" name="details">
+      <el-tab-pane label="回顾详情" name="details">
         <el-form :model="form" class="addActivity" :rules="rules" ref="Form" label-width="7rem" hide-required-asterisk>
           <el-row>
             <el-col :span="12">
@@ -48,6 +48,9 @@
                 <span>{{this.form.registerBeginTime | formatDateTime}}</span> 至
                 <span>{{this.form.registerEndTime | formatDateTime}}</span>
               </el-form-item>
+              <el-form-item label="合作方">
+                <span>合作方</span>
+              </el-form-item>
             </el-col>
           </el-row>
           <el-row>
@@ -78,9 +81,9 @@
             <el-input placeholder="输入活动名称搜索" v-model="searchActivityName" clearable class="w-200"
                       @keyup.enter.native="getActivityApplyList"/>
             <el-button type="success" class="el-icon-search ml-5" @click="getActivityApplyList">搜索</el-button>
-            <el-button class="float-right" type="danger" icon="el-icon-delete" @click="delMoreApplyCheck">批量删除
+            <el-button class="float-right" type="danger" icon="el-icon-delete" @click="delMoreApplyCheck" v-show="false">批量删除
             </el-button>
-            <el-button class="float-right" type="success" icon="el-icon-download" @click="download">下载</el-button>
+            <el-button class="float-right" type="success" icon="el-icon-download" @click="downloadActivityApply">下载</el-button>
           </div>
           <div class="">
             <el-table
@@ -110,11 +113,11 @@
               </el-table-column>
               <el-table-column align="center" header-align="center" label="操作" fixed="right" width="200">
                 <template slot-scope="scope">
-                  <el-button type="success" icon="el-icon-check" :disabled="scope.row.state===2" @click="activityApplyCheck(scope.row,2)">
+                  <el-button type="success" icon="el-icon-check" disabled @click="activityApplyCheck(scope.row,2)">
                     <span v-if="scope.row.state===2">已</span>
                     通过
                   </el-button>
-                  <el-button type="danger" icon="el-icon-close" :disabled="scope.row.state===0" @click="activityApplyCheck(scope.row,0)">
+                  <el-button type="danger" icon="el-icon-close" disabled @click="activityApplyCheck(scope.row,0)">
                     <span v-if="scope.row.state===0">已</span>
                     拒绝
                   </el-button>
@@ -124,6 +127,8 @@
           </div>
           <pagination ref="Pagination" @getNewData="getActivityApplyList"></pagination>
         </el-card>
+      </el-tab-pane>
+      <el-tab-pane label="文章编辑" name="articleEditor">
       </el-tab-pane>
     </el-tabs>
   </el-card>
@@ -136,7 +141,7 @@
   import {
     activityApplyCheckApi,
     addActivityApi,
-    delActivityApi, delApplyCheckApi,
+    delActivityApi, delApplyCheckApi, downloadActivityApplyApi,
     pageActivityApi,
     pageActivityApplyApi
   } from "@/api/activity/activity";
@@ -191,6 +196,14 @@
       //this.getActivityApplyList();
     },
     methods: {
+      downloadActivityApply() {
+        downloadActivityApplyApi(this.form.id).then(response => {
+          console.log(response);
+          window.open(response,"_blank");
+        }).catch(error => {
+          console.log(error);
+        })
+      },
       getActivityApplyList() {
         console.log(this.form);
         this.isTableLoading = true;
