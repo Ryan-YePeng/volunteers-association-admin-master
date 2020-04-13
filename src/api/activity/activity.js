@@ -1,4 +1,4 @@
-import {axiosD, axiosG, axiosK, axiosP} from "./request";
+import {axiosD, axiosG, axiosK, axiosM, axiosP} from "../request";
 
 const activityApplyCheckUrl = "activity/activityApplyCheck"; // 审核活动报名
 const addActivityUrl = "activity/addActivity"; // 添加活动
@@ -12,9 +12,8 @@ const pageActivityApplyUrl = "activity/pageActivityApply?"; //分页获得活动
 
 export const activityApplyCheckApi = data => axiosP(activityApplyCheckUrl, data);
 export const addActivityApi = data => axiosK(addActivityUrl, data);
-export const addActivityApplyApi = data => axiosK(addActivityApplyUrl, data);
-export const delActivityApi = data => axiosD(delActivityUrl + data);
-export const delApplyCheckApi = data => axiosD(delApplyCheckUrl + data);
+export const delActivityApi = data => axiosM(delActivityUrl , data, 'delete');
+export const delApplyCheckApi = data => axiosM(delApplyCheckUrl , data, 'delete');
 export const editActivityApi = data => axiosP(editActivityUrl, data);
 export const getActivityApi = data => axiosG(getActivityUrl + data);
 export const pageActivityApi = data => axiosG(pageActivityUrl + data);

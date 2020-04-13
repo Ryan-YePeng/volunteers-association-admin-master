@@ -40,7 +40,7 @@
           language_url: "assets/tinymce/langs/zh_CN.js", //导入语言文件
           language: "zh_CN", //语言设置
           skin_url: "assets/tinymce/skins/ui/oxide", //主题样式
-          height: 250, //高度
+          height: 500, //高度
           menubar: false, // 最上方menu菜单
           browser_spellcheck: true, // 拼写检查
           branding: false, // 去水印
@@ -57,7 +57,7 @@
     },
     computed: {
       pictureBaseUrl() {
-        return process.env.VUE_APP_BASE_API;
+        return process.env.VUE_APP_BASE_API+'/';
       }
     },
     mounted() {
@@ -69,8 +69,8 @@
         return tinymce.editors[this.editorKey].getContent()
       },
       // 设置富文本内容
-      setContent(value = "") {
-        tinymce.activeEditor.setContent(value)
+      setContent(value ="") {
+        tinymce.editors[this.editorKey].setContent(value)
       },
       init() {
         const _this = this;
@@ -83,7 +83,7 @@
             data.file = blobInfo.blob();
             data.typePath = 'activity';
             uploadPicturePlusApi(data).then(result => {
-              let response = result.data.path;
+              let response = result.resultParam.uploadFilePath;
               let url = _this.pictureBaseUrl + response;
               if (result.status === 200) {
                 success(url);

@@ -66,22 +66,27 @@
       </el-row>
       <el-row>
         <el-col :span="24">
-          <el-form-item label="活动简介" prop="content"></el-form-item>
+          <el-form-item label="活动简介" prop="content">
+            <custom-editor :editor-key="0" ref="Editor"></custom-editor>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col>
+          <submit-button class="submitBtn float-right " ref="SubmitButton" @submit="submitForm"/>
         </el-col>
       </el-row>
     </el-form>
-    <custom-editor :editor-key="0" ref="Editor"></custom-editor>
-    <submit-button class="submitBtn float-right " ref="SubmitButton" @submit="submitForm"/>
   </el-card>
 
 </template>
 
 <script>
-  import ActivityCoverUploaderPlus from './cover_uploader';
+  import ActivityCoverUploaderPlus from '../component/cover_uploader';
   import {validatePhone} from "@/utils/validate";
-  import {addActivityApi} from "@/api/activity";
+  import {addActivityApi} from "@/api/activity/activity";
   import {formatDateTime} from "@/utils/common";
-  import CustomEditor from './CustomEditor'
+  import CustomEditor from '../component/CustomEditor'
 
   export default {
     name: "AddOngoingActivity",

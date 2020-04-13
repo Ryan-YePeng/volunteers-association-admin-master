@@ -6,30 +6,48 @@
                   @keyup.enter.native="getActivityList"/>
         <el-button type="success" class="el-icon-search ml-5" @click="getActivityList">搜索</el-button>
         <el-button class="float-right" type="primary" icon="el-icon-plus" @click="add">新增</el-button>
+        <el-button class="float-right" type="danger" icon="el-icon-delete" @click="deleteMoreActivity">批量删除</el-button>
+        <el-button class="float-right" type="success" icon="el-icon-download" @click="deleteActivity">下载</el-button>
       </div>
       <div class="">
         <el-table
             v-loading="isTableLoading"
             :data="formData"
+            @selection-change="getSelected"
         >
-          <el-table-column prop="name" label="活动名称"></el-table-column>
-          <el-table-column label="报名时间">
+          <el-table-column
+              type="selection"
+              width="55">
+          </el-table-column>
+          <el-table-column  prop="title" label="活动名称"></el-table-column>
+          <el-table-column label="活动开始时间">
             <template slot-scope="scope">
-              <span>{{ }}</span>
+              <span>{{scope.row.beginTime | formatDateTime2}}</span>
             </template>
           </el-table-column>
-          <el-table-column label="活动时间">
+          <el-table-column label="活动结束时间">
             <template slot-scope="scope">
-              <span>{{scope.row.createTime | formatDateTime}}</span>
+              <span>{{scope.row.endTime | formatDateTime2}}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="sort" label="已报名人数"></el-table-column>
-          <el-table-column prop="sort" label="现报人数"></el-table-column>
-          <el-table-column prop="sort" label="地址"></el-table-column>
-          <el-table-column prop="sort" label="联系方式"></el-table-column>
+          <!--<el-table-column label="报名开始时间">
+            <template slot-scope="scope">
+              <span>{{scope.row.registerBeginTime | formatDateTime2}}</span><br>
+            </template>
+          </el-table-column>
+          <el-table-column label="报名结束时间">
+            <template slot-scope="scope">
+              <span>{{scope.row.registerEndTime | formatDateTime2}}</span>
+            </template>
+          </el-table-column>-->
+          <el-table-column prop="number" label="已报名人数"></el-table-column>
+          <el-table-column prop="maxNumber" label="限报人数"></el-table-column>
+          <el-table-column prop="name" label="负责人"></el-table-column>
+          <el-table-column prop="phone" label="联系方式"></el-table-column>
+          <el-table-column prop="address" label="活动地点"></el-table-column>
           <el-table-column label="操作" fixed="right" align="center" width="150">
             <template slot-scope="scope">
-              <el-button type="primary" icon="el-icon-edit" @click.stop="edit(scope.row)"></el-button>
+              <el-button type="primary" icon="el-icon-view" @click="edit(scope.row)"></el-button>
               <delete-button
                   :ref="scope.row.id"
                   :id="scope.row.id"
@@ -38,18 +56,18 @@
           </el-table-column>
         </el-table>
       </div>
-        <pagination ref="Pagination" @getNewData="getActivityList"></pagination>
+      <pagination ref="Pagination" @getNewData="getActivityList"></pagination>
     </el-card>
     <add-ongoing-activity v-show="addFlag&&!editFlag" ref="AddOngoingActivity" @update="getActivityList"></add-ongoing-activity>
-    <!--<edit-ongoing-activity v-show="editFlag" ref="EditOngoingActivity" @update="getActivityList"></edit-ongoing-activity>-->
+    <edit-ongoing-activity v-show="!addFlag&&editFlag" ref="EditOngoingActivity" @update="getActivityList"></edit-ongoing-activity>
   </div>
 
 </template>
 
 <script>
-  import {getActivityApi, delActivityApi, pageActivityApi} from '@/api/activity'
-  import AddOngoingActivity from './add'
-  import EditOngoingActivity from './edit'
+  import {getActivityApi, delActivityApi, pageActivityApi} from '@/api/activity/activity'
+  import AddOngoingActivity from './add/index'
+  import EditOngoingActivity from './edit/index'
   import {objectEvaluate} from "@/utils/common";
 
   export default {
@@ -61,7 +79,9 @@
         formData: [],
         searchActivityName: '',
         addFlag: false,
-        editFlag: false
+        editFlag: false,
+        isDeleteMoreDisabled: true,
+        deleteList: []
       }
     },
     mounted() {
@@ -70,35 +90,53 @@
     methods: {
       getActivityList() {
         this.isTableLoading = true;
-
         let pagination = this.$refs.Pagination;
         let param = `current=${pagination.current}&size=${pagination.size}&title=${this.searchActivityName}&timeState=1`;
         pageActivityApi(param).then(result => {
           this.isTableLoading = false;
-          //let response = result.resultParam.jobList;
-          //this.formData = response.records;
-          //pagination.total = response.total;
+          let response = result.resultParam.activityPage;
+          this.formData = response.records;
+          pagination.total = response.total;
         })
       },
       add() {
         /*let _this = this.$refs.AddOngoingActivity;
         _this.visible = true*/
-        this.addFlag=true
+        this.addFlag = true;
+        this.editFlag = false;
+
       },
       edit(obj) {
+        /*let _this = this.$refs.EditOngoingActivity;
+        objectEvaluate(_this.form, obj);
+        _this.visible = true*/
+        this.addFlag = false;
+        this.editFlag = true;
         let _this = this.$refs.EditOngoingActivity;
         objectEvaluate(_this.form, obj);
-        /*_this.visible = true*/
+        //_this.$refs['Editor'].setContent(obj.content);
+        _this.getActivityApplyList();
+      },
+      getSelected(array) {
+        this.deleteList = array.map(item => item.id);
+        this.isDeleteMoreDisabled = array.length === 0;
       },
       deleteActivity(id) {
-        delActivityApi(id)
-                .then(() => {
-                  this.getActivityList();
-                  this.$refs[id].close()
-                })
-                .catch(() => {
-                  this.$refs[id].stop();
-                })
+        delActivityApi({ids: id})
+          .then(() => {
+            this.getActivityList();
+            this.$refs[id].close()
+          })
+          .catch(() => {
+            this.$refs[id].stop();
+          })
+      },
+      deleteMoreActivity() {
+        this.$msgBox('确定批量删除操作吗？').then(() => {
+          delActivityApi({ids: [this.deleteList]}).then(() => {
+            this.getActivityList();
+          })
+        })
       }
     }
   }
