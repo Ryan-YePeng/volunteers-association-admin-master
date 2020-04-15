@@ -127,7 +127,6 @@
     },
     watch: {
       'form.ActivityTime'(v) {
-        console.log(v);
         this.form.beginTime = formatDateTime(v[0]);
         this.form.endTime = formatDateTime(v[1]);
       },
@@ -165,7 +164,6 @@
       getImage(value) {
         this.form.cover = value;
         this.$refs.Form.validateField('cover');
-        console.log(value)
       },
       cancel() {
         this.$parent.addFlag = false;

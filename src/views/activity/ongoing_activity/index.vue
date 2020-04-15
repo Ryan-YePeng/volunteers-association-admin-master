@@ -7,7 +7,7 @@
         <el-button type="success" class="el-icon-search ml-5" @click="getActivityList">搜索</el-button>
         <el-button class="float-right" type="primary" icon="el-icon-plus" @click="add">新增</el-button>
         <el-button class="float-right" type="danger" icon="el-icon-delete" @click="deleteMoreActivity">批量删除</el-button>
-        <el-button class="float-right" type="success" icon="el-icon-download" @click="deleteActivity">下载</el-button>
+        <el-button class="float-right" type="warning" icon="el-icon-download" @click="deleteActivity">导出</el-button>
       </div>
       <div class="">
         <el-table

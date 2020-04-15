@@ -53,14 +53,14 @@
           <el-row>
             <el-col :span="24">
               <el-form-item label="封面图片">
-                <img :src="baseUrl+form.cover" alt="">
+                <img :src="form.cover===''?'':baseUrl+form.cover" alt="">
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="24">
               <el-form-item label="活动简介">
-                <div class="watch" v-html="form.content" style="border: 1px solid rgba(120,120,120,0.8);"></div>
+                <div class="watch" v-html="form.content"></div>
                 <!--<custom-editor :editor-key="1" ref="Editor"></custom-editor>-->
               </el-form-item>
             </el-col>
@@ -80,7 +80,7 @@
             <el-button type="success" class="el-icon-search ml-5" @click="getActivityApplyList">搜索</el-button>
             <el-button class="float-right" type="danger" icon="el-icon-delete" @click="delMoreApplyCheck">批量删除
             </el-button>
-            <el-button class="float-right" type="success" icon="el-icon-download" @click="download">下载</el-button>
+            <el-button class="float-right" type="warning" icon="el-icon-download" @click="download">导出</el-button>
           </div>
           <div class="">
             <el-table
@@ -136,7 +136,7 @@
   import {
     activityApplyCheckApi,
     addActivityApi,
-    delActivityApi, delApplyCheckApi,
+    delActivityApi, delApplyCheckApi, downloadActivityApplyApi,
     pageActivityApi,
     pageActivityApplyApi
   } from "@/api/activity/activity";
@@ -144,7 +144,7 @@
 
   export default {
     name: "EditOngoingActivity",
-    components: {ActivityCoverUploaderPlus, CustomEditor},
+    components: {ActivityCoverUploaderPlus},
     props: {},
     data() {
       return {
@@ -188,11 +188,23 @@
       }
     },
     mounted() {
-      //this.getActivityApplyList();
+      //this.$refs.Editor.setContent(this.form.content);
     },
     methods: {
+      download() {
+        downloadActivityApplyApi(this.form.id).then(result => {
+          let blob = new Blob([result]);
+          let downloadElement = document.createElement('a');
+          let href = window.URL.createObjectURL(blob); //创建下载的链接
+          downloadElement.href = href;
+          downloadElement.download = '报名信息.xls'; //下载后文件名
+          document.body.appendChild(downloadElement);
+          downloadElement.click(); //点击下载
+          document.body.removeChild(downloadElement); //下载完成移除元素
+          window.URL.revokeObjectURL(href); //释放掉blob对象
+        }).catch(error => { })
+      },
       getActivityApplyList() {
-        console.log(this.form);
         this.isTableLoading = true;
         let pagination = this.$refs.Pagination;
         let param = `current=${pagination.current}&size=${pagination.size}&name=${this.searchActivityName}&activityId=${this.form.id}`;
@@ -243,25 +255,20 @@
           state:v
         };
         activityApplyCheckApi(data).then(response => {
-          console.log(response);
           if (response.status===200){
             this.getActivityApplyList();
           }
-        }).catch(error => {
-          console.log(error);
-        })
+        }).catch(error => { })
       },
       cancel() {
         this.$parent.getActivityList();
         this.$parent.editFlag = false;
         Object.assign(this.$data.form, this.$options.data().form);
-        this.$refs['coverUploader'].url = '';
+        //this.$refs['coverUploader'].url = '';
         this.$refs['Form'].resetFields();
-        this.$refs.Editor.setContent();
+        //this.$refs.Editor.setContent();
       },
-      handleClick(tab, event) {
-        console.log(tab, event);
-      }
+      handleClick(tab, event) { }
     },
 
   }
@@ -271,6 +278,15 @@
   .addActivity {
     padding: 20px 0;
 
+    .watch{
+      border: 1px solid rgba(200,200,200,0.8);
+      border-radius: 5px;
+      padding: 5px;
+      img{
+        max-width: 100%;
+        height: auto;
+      }
+    }
     .el-range-editor--small.el-input__inner {
       width: 100%;
     }

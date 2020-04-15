@@ -6,7 +6,6 @@
                   @keyup.enter.native="getActivityList"/>
         <el-button type="success" class="el-icon-search ml-5" @click="getActivityList">搜索</el-button>
         <el-button class="float-right" type="danger" icon="el-icon-delete" @click="deleteMoreActivity">批量删除</el-button>
-        <!--<el-button class="float-right" type="success" icon="el-icon-download" @click="deleteActivity">下载</el-button>-->
       </div>
       <div class="">
         <el-table
@@ -29,16 +28,6 @@
               <span>{{scope.row.endTime | formatDateTime2}}</span>
             </template>
           </el-table-column>
-          <!--<el-table-column label="报名开始时间">
-            <template slot-scope="scope">
-              <span>{{scope.row.registerBeginTime | formatDateTime2}}</span><br>
-            </template>
-          </el-table-column>
-          <el-table-column label="报名结束时间">
-            <template slot-scope="scope">
-              <span>{{scope.row.registerEndTime | formatDateTime2}}</span>
-            </template>
-          </el-table-column>-->
           <el-table-column prop="number" label="已报名人数"></el-table-column>
           <el-table-column prop="maxNumber" label="限报人数"></el-table-column>
           <el-table-column prop="name" label="负责人"></el-table-column>
@@ -48,9 +37,9 @@
             <template slot-scope="scope">
               <el-button type="primary" icon="el-icon-view" @click="edit(scope.row)"></el-button>
               <delete-button
-                  :ref="scope.row.id"
-                  :id="scope.row.id"
-                  @start="deleteActivity"/>
+                :ref="scope.row.id"
+                :id="scope.row.id"
+                @start="deleteActivity"/>
             </template>
           </el-table-column>
         </el-table>
@@ -63,9 +52,9 @@
 </template>
 
 <script>
-  import {getActivityApi, delActivityApi, pageActivityApi} from '@/api/activity/activity'
+  import {delActivityApi, pageActivityApi} from '@/api/activity/activity'
   import EditEndedActivity from './edit/index'
-  import {objectEvaluate} from "@/utils/common";
+  import {isEmpty, objectEvaluate} from "@/utils/common";
 
   export default {
     name: "EndedActivity",
@@ -82,6 +71,7 @@
     },
     mounted() {
       this.getActivityList();
+
     },
     methods: {
       getActivityList() {
@@ -93,7 +83,7 @@
           let response = result.resultParam.activityPage;
           this.formData = response.records;
           pagination.total = response.total;
-        })
+        });
       },
       edit(obj) {
         /*let _this = this.$refs.EditEndedActivity;
@@ -101,7 +91,17 @@
         _this.visible = true*/
         this.editFlag = true;
         let _this = this.$refs.EditEndedActivity;
-        objectEvaluate(_this.form, obj);
+        if (!isEmpty(obj.picture)){
+          let temp = (obj.picture.split(","));
+          for (let i=0;i<temp.length;i++){
+            temp[i]=process.env.VUE_APP_BASE_API+'/'+temp[i]
+          }
+          obj.picture2=temp;
+        }else{
+          obj.picture2=[]
+        }
+        let temp2 = {...obj};
+        objectEvaluate(_this.form, temp2);
         //_this.$refs['Editor'].setContent(obj.content);
         _this.getActivityApplyList();
       },

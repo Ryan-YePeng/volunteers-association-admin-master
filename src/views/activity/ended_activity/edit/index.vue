@@ -3,7 +3,7 @@
     <div slot="header" class="clearfix">
       <el-page-header @back="cancel" content="回顾详情" style="height: 32px;line-height: 32px;"></el-page-header>
     </div>
-    <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+    <el-tabs v-model="activeName" type="card" @tab-click="changeActiveName">
       <el-tab-pane label="回顾详情" name="details">
         <el-form :model="form" class="addActivity" :rules="rules" ref="Form" label-width="7rem" hide-required-asterisk>
           <el-row>
@@ -56,7 +56,19 @@
           <el-row>
             <el-col :span="24">
               <el-form-item label="封面图片">
-                <img :src="baseUrl+form.cover" alt="">
+                <img :src="form.cover===''?'':baseUrl+form.cover" alt="">
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="展示图片">
+                <el-image
+                    style="width: 200px; height: 200px"
+                    :src="form.picture2[0]"
+                    :preview-src-list="form.picture2">
+                </el-image>
+                <div style="width: 200px;text-align: center">（点击查看更多）</div>
               </el-form-item>
             </el-col>
           </el-row>
@@ -64,7 +76,6 @@
             <el-col :span="24">
               <el-form-item label="活动简介">
                 <div class="watch" v-html="form.content" style="border: 1px solid rgba(120,120,120,0.8);"></div>
-                <!--<custom-editor :editor-key="1" ref="Editor"></custom-editor>-->
               </el-form-item>
             </el-col>
           </el-row>
@@ -83,7 +94,7 @@
             <el-button type="success" class="el-icon-search ml-5" @click="getActivityApplyList">搜索</el-button>
             <el-button class="float-right" type="danger" icon="el-icon-delete" @click="delMoreApplyCheck" v-show="false">批量删除
             </el-button>
-            <el-button class="float-right" type="success" icon="el-icon-download" @click="downloadActivityApply">下载</el-button>
+            <el-button class="float-right" type="warning" icon="el-icon-download" @click="downloadActivityApply">导出</el-button>
           </div>
           <div class="">
             <el-table
@@ -107,7 +118,7 @@
               <el-table-column align="center" header-align="center" prop="state" label="状态">
                 <template slot-scope="scope">
                   <span v-if="scope.row.state===0" style="color: red">已拒绝</span>
-                  <span v-if="scope.row.state===1">待审核</span>
+                  <span v-if="scope.row.state===1">未审核</span>
                   <span v-if="scope.row.state===2" style="color: green">已通过</span>
                 </template>
               </el-table-column>
@@ -129,6 +140,30 @@
         </el-card>
       </el-tab-pane>
       <el-tab-pane label="文章编辑" name="articleEditor">
+
+        <el-form :model="form" class="addActivity" :rules="rules" ref="Form" label-width="7rem" hide-required-asterisk>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="图片上传">
+                <cover-uploader :pathString="(form.picture+'')"  @getImage="getImage" ref="coverUploader" ></cover-uploader>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="活动简介" prop="content">
+                <custom-editor :editor-key="1" ref="Editor"></custom-editor>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item>
+                <submit-button class="submitBtn float-right " ref="SubmitButton" @submit="submitForm"/>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
       </el-tab-pane>
     </el-tabs>
   </el-card>
@@ -139,17 +174,16 @@
   import ActivityCoverUploaderPlus from '../component/cover_uploader';
   import {validatePhone} from "@/utils/validate";
   import {
-    activityApplyCheckApi,
-    addActivityApi,
-    delActivityApi, delApplyCheckApi, downloadActivityApplyApi,
-    pageActivityApi,
+    activityApplyCheckApi, delApplyCheckApi, downloadActivityApplyApi, editActivityApi, getActivityApi,
     pageActivityApplyApi
   } from "@/api/activity/activity";
   import CustomEditor from '../component/CustomEditor'
+  import coverUploader from '../component/cover_uploader'
+  import {isEmpty} from "@/utils/common";
 
   export default {
     name: "EditOngoingActivity",
-    components: {ActivityCoverUploaderPlus, CustomEditor},
+    components: {ActivityCoverUploaderPlus, CustomEditor, coverUploader},
     props: {},
     data() {
       return {
@@ -161,7 +195,13 @@
         searchActivityName: '',
         isDeleteMoreDisabled: true,
         deleteList: [],
+        form3: {
+          groupPrice: [],
+          content: ''
+        },
         form: {
+          picture2: [],
+          picture: [],
           ActivityTime: [],
           RegisterTime: [],
           title: '',
@@ -193,19 +233,59 @@
       }
     },
     mounted() {
-      //this.getActivityApplyList();
+      this.$refs.Editor.setContent(this.form.content);
     },
     methods: {
+      changeActiveName(tab) {
+        if(tab.name==="details"){
+          this.getActivity();
+        }else if(tab.name==="participant"){
+          this.getActivityApplyList();
+        }
+      },
+      getActivity(){
+        getActivityApi(this.form.id)
+          .then(response => {
+            this.form={...response.resultParam.activity};
+            if (!isEmpty(this.form.picture)){
+              let temp = (this.form.picture.split(","));
+              for (let i=0;i<temp.length;i++){
+                temp[i]=process.env.VUE_APP_BASE_API+'/'+temp[i]
+              }
+              this.form.picture2=temp;
+            }else{
+              this.form.picture2=[]
+            }
+          }).catch(error => { })
+      },
+      submitForm() {
+        let data = {
+          id:this.form.id,
+          picture:this.form3.groupPrice,
+          content:this.$refs.Editor.getContent()
+        };
+        editActivityApi(data).then(response => {
+          this.activeName='details';
+          this.getActivity();
+        }).catch(error => { })
+      },
+      getImage(value) {
+        this.form3.groupPrice=value;
+      },
       downloadActivityApply() {
-        downloadActivityApplyApi(this.form.id).then(response => {
-          console.log(response);
-          window.open(response,"_blank");
-        }).catch(error => {
-          console.log(error);
-        })
+        downloadActivityApplyApi(this.form.id).then(result => {
+          let blob = new Blob([result]);
+          let downloadElement = document.createElement('a');
+          let href = window.URL.createObjectURL(blob); //创建下载的链接
+          downloadElement.href = href;
+          downloadElement.download = '报名信息.xls'; //下载后文件名
+          document.body.appendChild(downloadElement);
+          downloadElement.click(); //点击下载
+          document.body.removeChild(downloadElement); //下载完成移除元素
+          window.URL.revokeObjectURL(href); //释放掉blob对象
+        }).catch(error => { })
       },
       getActivityApplyList() {
-        console.log(this.form);
         this.isTableLoading = true;
         let pagination = this.$refs.Pagination;
         let param = `current=${pagination.current}&size=${pagination.size}&name=${this.searchActivityName}&activityId=${this.form.id}`;
@@ -237,18 +317,6 @@
           })
         })
       },
-      /*submitForm() {
-        let data = {...this.form};
-        data.content = this.$refs.Editor.getContent();
-        this.$refs.SubmitButton.start();
-        addActivityApi(data).then(() => {
-          this.$refs.SubmitButton.stop();
-          this.$emit('update');
-          this.cancel()
-        }).catch(() => {
-          this.$refs.SubmitButton.stop();
-        })
-      },*/
       activityApplyCheck(row, v) {
         let data = {
           activityId:row.activityId,
@@ -256,13 +324,10 @@
           state:v
         };
         activityApplyCheckApi(data).then(response => {
-          console.log(response);
           if (response.status===200){
             this.getActivityApplyList();
           }
-        }).catch(error => {
-          console.log(error);
-        })
+        }).catch(error => { })
       },
       cancel() {
         this.$parent.getActivityList();
@@ -271,9 +336,6 @@
         this.$refs['coverUploader'].url = '';
         this.$refs['Form'].resetFields();
         this.$refs.Editor.setContent();
-      },
-      handleClick(tab, event) {
-        console.log(tab, event);
       }
     },
 
