@@ -49,7 +49,7 @@ const plugins = [
     storage: {
       getItem: key => Cookies.get(key),
       setItem: (key, value) =>
-          Cookies.set(key, value, {expires: modules.user.state.rememberMe ? tokenCookieExpires : 1, secure: false}),
+        Cookies.set(key, value, {expires: modules.user.state.rememberMe ? tokenCookieExpires : 1, secure: false}),
       removeItem: key => Cookies.remove(key)
     },
     reducer(val) {
@@ -60,8 +60,12 @@ const plugins = [
   })
 ];
 
-export default new Vuex.Store({
+const store = new Vuex.Store({
   modules,
   plugins
-})
+});
 
+Vue.prototype.$storeGet = store.getters;
+Vue.prototype.$storeSet = store.dispatch;
+
+export default store
