@@ -1,10 +1,10 @@
 <template>
   <vue-scroll
-          ref="VueScroll"
-          class="scroll-pane"
-          @handle-scroll="handleScroll"
-          :ops="ops"
-          :style="'width:' + scrollWidth + ';height:' + scrollHeight">
+      ref="VueScroll"
+      class="scroll-pane"
+      @handle-scroll="handleScroll"
+      :ops="ops"
+      :style="'width:' + scrollWidth + ';height:' + scrollHeight">
     <slot/>
     <div class="go-back-top" v-if="isUseGoBackTop">
       <transition name="el-fade-in">
@@ -45,11 +45,13 @@
       return {
         isShowTopPane: false,
         ops: {
+          vuescroll: {
+            wheelScrollDuration: 300
+          },
           scrollPanel: {
             scrollingX: this.hasX,
             scrollingY: this.hasY,
-            speed: 1000,
-            easing: 'easeInOutQuad'
+            speed: 800
           },
           bar: {
             onlyShowBarOnScroll: false,

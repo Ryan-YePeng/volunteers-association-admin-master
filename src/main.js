@@ -12,7 +12,7 @@ import './utils/EUI';
 // 右键菜单
 import EVueContextmenu from 'e-vue-contextmenu';
 // 滚动条
-import vuescroll from 'vuescroll';
+import vuescroll from 'vuescroll/dist/vuescroll-native';
 // 自定义指令
 import './utils/directive';
 // 过滤
@@ -27,9 +27,9 @@ import 'highlight.js/styles/atom-one-dark.css'
 // App
 import App from "./App.vue";
 
-Vue.use(vuescroll);
 Vue.use(EVueContextmenu);
 Vue.use(VueHighlightJS);
+Vue.component('vue-scroll', vuescroll);
 
 Vue.config.productionTip = false;
 
