@@ -42,7 +42,7 @@
                 :id="scope.row.id"
                 width="100"
                 msg="确认拒绝申请？"
-                @start="deleteRun"/>
+                @start="reject"/>
           </template>
         </el-table-column>
       </el-table>
@@ -84,8 +84,8 @@
           this.getRunList()
         })
       },
-      deleteRun(id) {
-        delCallRunApi({ids: id})
+      reject(id) {
+        checkRunApi({ids: id, state: 0})
           .then(() => {
             this.getRunList();
             this.$refs[id].close()
