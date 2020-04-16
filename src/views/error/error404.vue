@@ -1,9 +1,14 @@
 <template>
   <div class="out">
     <div id="container">
-      <img class="png" src="../../assets/error/403_404/images/404.png" />
-      <img class="png msg" src="../../assets/error/403_404/images/404_msg.png" />
-      <p><a style="cursor: pointer;" @click.stop="$router.push({name:'home'})" target="_blank"><img class="png" src="../../assets/error/403_404/images/404_to_index.png" /></a> </p>
+      <img class="png" src="../../assets/error/404.png"/>
+      <img class="png msg" src="../../assets/error/404_msg.png"/>
+      <p class="go-back-home">
+        <a class="pointer" target="_blank"
+           @click.stop="$router.push({name:'home'})">
+          <img class="png" src="../../assets/error/404_to_index.png"/>
+        </a>
+      </p>
     </div>
     <div id="cloud" class="png"></div>
   </div>
@@ -11,40 +16,39 @@
 
 <script>
   export default {
-    name: "Error404",
-
+    name: "Error404"
   }
 </script>
 
-<style scoped lang="scss">
+<style scoped>
   .out {
     height: 100%;
-    background: url("../../assets/error/403_404/images/error_bg.jpg") repeat-x scroll 0 0 #67ACE4;
+    background: url("../../assets/error/error_bg.jpg") repeat-x scroll 0 0 #67ACE4;
   }
+
   #container {
     margin: 0 auto;
     padding-top: 8%;
     text-align: center;
     width: 560px;
   }
+
   #container img {
     border: medium none;
     margin-bottom: 50px;
   }
-  #container .error {
-    height: 200px;
+
+  #container .go-back-home {
     position: relative;
+    z-index: 999;
   }
-  #container .error img {
-    bottom: -50px;
-    position: absolute;
-    right: -50px;
-  }
+
   #container .msg {
     margin-bottom: 65px;
   }
+
   #cloud {
-    background: url("../../assets/error/403_404/images/error_cloud.png") repeat-x scroll 0 0 transparent;
+    background: url("../../assets/error/error_cloud.png") repeat-x scroll 0 0 transparent;
     bottom: 0;
     height: 170px;
     position: absolute;
