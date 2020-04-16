@@ -24,12 +24,11 @@
     <div>
       <el-table v-loading="isTableLoading" :data="formData" @selection-change="getSelected">
         <el-table-column type="selection" width="55"></el-table-column>
-        <el-table-column prop="name" label="发起者"></el-table-column>
+        <el-table-column prop="title" label="标题"></el-table-column>
+        <el-table-column prop="content" label="内容" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="name" label="作者"></el-table-column>
         <el-table-column prop="phone" label="电话"></el-table-column>
-        <el-table-column prop="number" label="报名人数"></el-table-column>
-        <el-table-column prop="maxNumber" label="限报人数"></el-table-column>
-        <el-table-column prop="place" label="地点"></el-table-column>
-        <el-table-column prop="time" label="时间">
+        <el-table-column prop="time" label="创建时间">
           <template slot-scope="scope">
             <span>{{scope.row.createTime | formatDateTime}}</span>
           </template>
@@ -47,15 +46,15 @@
         </el-table-column>
       </el-table>
     </div>
-    <pagination ref="Pagination" @getNewData="getRunList"></pagination>
+    <pagination ref="Pagination" @getNewData="pageArticle"></pagination>
   </el-card>
 </template>
 
 <script>
-  import {getRunListApi, checkRunApi} from '@/api/run'
+  import {articleCheckApi, pageArticleApi} from '@/api/run'
 
   export default {
-    name: "RunAudit",
+    name: "ExperienceAudit",
     data() {
       return {
         isTableLoading: false,
@@ -65,29 +64,29 @@
       }
     },
     mounted() {
-      this.getRunList()
+      this.pageArticle()
     },
     methods: {
-      getRunList() { // 0失败 1审核中 2成功
+      pageArticle() { // 0失败 1审核中 2成功
         this.isTableLoading = true;
         let pagination = this.$refs.Pagination;
-        let param = `current=${pagination.current}&size=${pagination.size}&state=1`;
-        getRunListApi(param).then(result => {
+        let param = `current=${pagination.current}&size=${pagination.size}&state=1&title=`;
+        pageArticleApi(param).then(result => {
           this.isTableLoading = false;
-          let response = result.resultParam.callRunPage;
+          let response = result.resultParam.articlePage;
           this.formData = response.records;
           pagination.total = response.total;
         })
       },
       pass(id) {
-        checkRunApi({ids: id, state: 2}).then(() => {
-          this.getRunList()
+        articleCheckApi({ids: id, state: 2}).then(() => {
+          this.pageArticle()
         })
       },
       reject(id) {
-        checkRunApi({ids: id, state: 0})
+        articleCheckApi({ids: id, state: 0})
           .then(() => {
-            this.getRunList();
+            this.pageArticle();
             this.$refs[id].close()
           })
           .catch(() => {
@@ -100,15 +99,15 @@
       },
       rejectMore() {
         this.$msgBox('确定批量拒绝审核操作吗？').then(() => {
-          checkRunApi({ids: [this.deleteList], state: 0}).then(() => {
-            this.getRunList()
+          articleCheckApi({ids: [this.deleteList], state: 0}).then(() => {
+            this.pageArticle()
           })
         })
       },
       passMore() {
         this.$msgBox('确定批量通过审核操作吗？').then(() => {
-          checkRunApi({ids: [this.deleteList], state: 2}).then(() => {
-            this.getRunList()
+          articleCheckApi({ids: [this.deleteList], state: 2}).then(() => {
+            this.pageArticle()
           })
         })
       }
