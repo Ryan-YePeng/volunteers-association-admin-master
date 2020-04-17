@@ -9,7 +9,7 @@ let errorStatus = null;
 const service = axios.create({
   timeout: timeout,
   baseURL: process.env.VUE_APP_BASE_API,
-  withCredentials: true
+  withCredentials: false
 });
 
 //请求拦截
