@@ -6,12 +6,38 @@
       <el-button type="success" class="el-icon-search ml-5" @click="getUserList">搜索</el-button>
     </div>
     <el-table v-loading="isTableLoading" :data="formData">
-      <el-table-column prop="nickName" label="姓名"></el-table-column>
-      <el-table-column prop="sex" label="性别"></el-table-column>
-      <el-table-column prop="phone" label="电话"></el-table-column>
-      <el-table-column label="注册时间">
+      <el-table-column prop="nickName" label="用户名"></el-table-column>
+      <el-table-column label="性别">
         <template slot-scope="scope">
-          <span>{{scope.row.createTime | formatDateTime}}</span>
+          <span>{{scope.row.sex == '1' ? '男' : '女'}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="phone" label="电话"></el-table-column>
+      <el-table-column prop="unit" label="单位">
+        <template slot-scope="scope">
+          <span>{{scope.row.userDetail.unit}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="联系地址">
+        <template slot-scope="scope">
+          <span>{{scope.row.userDetail.address}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="缴费金额">
+        <template slot-scope="scope">
+          <span>{{scope.row.userDetail.price}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否缴费">
+        <template slot-scope="scope">
+          <span v-if="scope.row.enabled"><el-tag type="success">是</el-tag></span>
+          <span v-else><el-tag type="danger">否</el-tag></span>
+        </template>
+      </el-table-column>
+      <el-table-column label="缴费时间">
+        <template slot-scope="scope">
+          <span v-if="scope.row.userDetail.hasOwnProperty('time')">{{scope.row.userDetail.time | formatDateTime}}</span>
+          <span v-else></span>
         </template>
       </el-table-column>
       <el-table-column label="操作" fixed="right" align="center" width="150">
@@ -39,7 +65,7 @@
         <el-option label="会长" value="2"></el-option>
       </el-select>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogTableVisible = false">取 消</el-button>
+        <el-button @click="visible = false">取 消</el-button>
         <el-button type="primary" @click="pass()">确 定</el-button>
       </div>
     </el-dialog>
@@ -47,7 +73,7 @@
 </template>
 
 <script>
-  import {getUserListApi, downloadUserApi, userCheckApi} from '@/api/vip'
+  import {getUserListApi, userCheckApi} from '@/api/vip'
 
   export default {
     name: "Vip_Apply",
@@ -77,7 +103,7 @@
         })
       },
       pass() {
-        userCheckApi({ids: this.id, state: 2}).then(() => {
+        userCheckApi({ids: this.id, state: 2, priceId: this.priceId}).then(() => {
           this.visible = false;
           this.getUserList()
         })
@@ -87,7 +113,7 @@
         this.visible = true
       },
       reject(id) {
-        userCheckApi({ids: id, state: 0})
+        userCheckApi({ids: id, state: 0, priceId: '5'})
           .then(() => {
             this.getUserList();
             this.$refs[id].close()
