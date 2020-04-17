@@ -37,10 +37,11 @@
     color: rgb(72, 151, 217);
     border-radius: 20px;
   }
-  .png{
-    margin-bottom: 5vh!important;
+
+  .png {
+    margin-bottom: 5vh !important;
     max-height: 100%;
-    @media screen and (max-height: 660px){
+    @media screen and (max-height: 660px) {
       height: 33vh;
     }
   }
