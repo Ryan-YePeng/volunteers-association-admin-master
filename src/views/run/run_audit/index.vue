@@ -40,7 +40,7 @@
             <delete-button
                 :ref="scope.row.id"
                 :id="scope.row.id"
-                width="100"
+                :width="100"
                 msg="确认拒绝申请？"
                 @start="reject"/>
           </template>
