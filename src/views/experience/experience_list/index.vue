@@ -17,10 +17,32 @@
       </el-button>
     </div>
     <div>
-      <el-table v-loading="isTableLoading" :data="formData" @selection-change="getSelected">
+      <el-table
+          v-loading="isTableLoading"
+          :data="formData"
+          @selection-change="getSelected"
+          row-key="id"
+          @row-click="rowClick"
+          :expand-row-keys="expands"
+      >
         <el-table-column type="selection" width="55"></el-table-column>
+        <el-table-column type="expand">
+          <template slot-scope="props">
+            <el-form label-position="left" class="demo-table-expand">
+              <el-form-item label="图片">
+                <el-image
+                    class="ml-5"
+                    v-for="url in props.row.picture.split(',')"
+                    :key="url"
+                    :src="baseUrl + url"/>
+              </el-form-item>
+              <el-form-item label="内容">
+                <pre>{{ props.row.content }}</pre>
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
         <el-table-column prop="title" label="标题"></el-table-column>
-        <el-table-column prop="content" label="内容" :show-overflow-tooltip="true"></el-table-column>
         <el-table-column prop="name" label="作者"></el-table-column>
         <el-table-column prop="phone" label="电话"></el-table-column>
         <el-table-column prop="time" label="创建时间">
@@ -53,13 +75,32 @@
         formData: [],
         searchState: '2',
         isDeleteMoreDisabled: true,
-        deleteList: []
+        deleteList: [],
+        expands: []
+      }
+    },
+    computed: {
+      baseUrl() {
+        return process.env.VUE_APP_BASE_API
       }
     },
     mounted() {
       this.pageArticle()
     },
     methods: {
+      rowClick(row, event, column) {
+        Array.prototype.remove = function (val) {
+          let index = this.indexOf(val);
+          if (index > -1) {
+            this.splice(index, 1);
+          }
+        };
+        if (this.expands.indexOf(row.id) < 0) {
+          this.expands.push(row.id);
+        } else {
+          this.expands.remove(row.id);
+        }
+      },
       pageArticle() { // 0失败 1审核中 2成功
         this.isTableLoading = true;
         let pagination = this.$refs.Pagination;
