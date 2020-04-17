@@ -37,9 +37,9 @@
       return {
         content: "",
         DefaultInit: {
-          language_url: "assets/tinymce/langs/zh_CN.js", //导入语言文件
+          language_url: "/assets/tinymce/langs/zh_CN.js", //导入语言文件
           language: "zh_CN", //语言设置
-          skin_url: "assets/tinymce/skins/ui/oxide", //主题样式
+          skin_url: "/assets/tinymce/skins/ui/oxide", //主题样式
           height: 500, //高度
           menubar: false, // 最上方menu菜单
           browser_spellcheck: true, // 拼写检查

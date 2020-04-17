@@ -4,6 +4,10 @@ module.exports = {
    */
   title: '阳江市马拉松协会',
   /**
+   * @description 是否启用history
+   */
+  isHistory: true,
+  /**
    * @description 是否显示logo
    */
   isShowLogo: true,

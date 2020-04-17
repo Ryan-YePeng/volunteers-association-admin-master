@@ -37,9 +37,9 @@
       return {
         content: "",
         DefaultInit: {
-          language_url: "assets/tinymce/langs/zh_CN.js", //导入语言文件
+          language_url: "/assets/tinymce/langs/zh_CN.js", //导入语言文件
           language: "zh_CN", //语言设置
-          skin_url: "assets/tinymce/skins/ui/oxide", //主题样式
+          skin_url: "/assets/tinymce/skins/ui/oxide", //主题样式
           height: 500, //高度
           menubar: false, // 最上方menu菜单
           browser_spellcheck: true, // 拼写检查
@@ -57,7 +57,7 @@
     },
     computed: {
       pictureBaseUrl() {
-        return process.env.VUE_APP_BASE_API+'/';
+        return process.env.VUE_APP_BASE_API + '/';
       }
     },
     mounted() {
@@ -66,11 +66,11 @@
     methods: {
       // 获得富文本内容
       getContent() {
-        return tinymce.editors[tinymce.editors.length-1].getContent()
+        return tinymce.editors[tinymce.editors.length - 1].getContent()
       },
       // 设置富文本内容
-      setContent(value ="") {
-        tinymce.editors[tinymce.editors.length-1].setContent(value)
+      setContent(value = "") {
+        tinymce.editors[tinymce.editors.length - 1].setContent(value)
       },
       init() {
         const _this = this;
