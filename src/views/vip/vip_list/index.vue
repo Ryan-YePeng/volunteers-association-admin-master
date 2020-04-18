@@ -45,7 +45,7 @@
       </el-table-column>
       <el-table-column label="是否缴费">
         <template slot-scope="scope">
-          <span v-if="scope.row.enabled"><el-tag type="success">是</el-tag></span>
+          <span v-if="scope.row.isPay"><el-tag type="success">是</el-tag></span>
           <span v-else><el-tag type="danger">否</el-tag></span>
         </template>
       </el-table-column>
