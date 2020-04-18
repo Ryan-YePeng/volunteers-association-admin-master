@@ -57,7 +57,7 @@
     },
     computed: {
       pictureBaseUrl() {
-        return process.env.VUE_APP_BASE_API+'/';
+        return process.env.VUE_APP_BASE_API + '/';
       }
     },
     mounted() {
@@ -66,12 +66,12 @@
     methods: {
       // 获得富文本内容
       getContent() {
-        return tinymce.editors[tinymce.editors.length-1].getContent()
+        return tinymce.editors[tinymce.editors.length - 1].getContent()
       },
       // 设置富文本内容
-      setContent(value ="") {
+      setContent(value = "") {
         //tinymce.editors[this.editorKey].setContent(value)
-        tinymce.editors[tinymce.editors.length-1].setContent(value)
+        tinymce.editors[tinymce.editors.length - 1].setContent(value)
       },
       init() {
         const _this = this;

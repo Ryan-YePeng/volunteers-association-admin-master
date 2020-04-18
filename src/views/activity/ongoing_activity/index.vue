@@ -19,7 +19,7 @@
               type="selection"
               width="55">
           </el-table-column>
-          <el-table-column  prop="title" label="活动名称"></el-table-column>
+          <el-table-column prop="title" label="活动名称"></el-table-column>
           <el-table-column label="活动开始时间">
             <template slot-scope="scope">
               <span>{{scope.row.beginTime | formatDateTime2}}</span>
@@ -47,7 +47,7 @@
           <el-table-column prop="address" label="活动地点"></el-table-column>
           <el-table-column label="操作" fixed="right" align="center" width="150">
             <template slot-scope="scope">
-              <el-button type="primary" icon="el-icon-view" @click="edit(scope.row)"></el-button>
+              <el-button type="primary" icon="el-icon-edit" @click="edit(scope.row)"></el-button>
               <delete-button
                   :ref="scope.row.id"
                   :id="scope.row.id"
@@ -58,8 +58,10 @@
       </div>
       <pagination ref="Pagination" @getNewData="getActivityList"></pagination>
     </el-card>
-    <add-ongoing-activity v-show="addFlag&&!editFlag" ref="AddOngoingActivity" @update="getActivityList"></add-ongoing-activity>
-    <edit-ongoing-activity v-show="!addFlag&&editFlag" ref="EditOngoingActivity" @update="getActivityList"></edit-ongoing-activity>
+    <add-ongoing-activity v-show="addFlag&&!editFlag" ref="AddOngoingActivity"
+                          @update="getActivityList"></add-ongoing-activity>
+    <edit-ongoing-activity v-show="!addFlag&&editFlag" ref="EditOngoingActivity"
+                           @update="getActivityList"></edit-ongoing-activity>
   </div>
 
 </template>
@@ -85,7 +87,11 @@
       }
     },
     mounted() {
-      this.getActivityList();
+      if (this.$route.query.id) {
+        this.edit({id: this.$route.query.id})
+      } else {
+        this.getActivityList();
+      }
     },
     methods: {
       getActivityList() {
@@ -112,10 +118,12 @@
         _this.visible = true*/
         this.addFlag = false;
         this.editFlag = true;
+        this.$router.push({name: "ongoing_activity", query: {id: obj.id}});
         let _this = this.$refs.EditOngoingActivity;
-        objectEvaluate(_this.form, obj);
+        _this.editFlag = false;
+        _this.getActivity();
         //_this.$refs['Editor'].setContent(obj.content);
-        _this.getActivityApplyList();
+        //objectEvaluate(_this.form, obj);
       },
       getSelected(array) {
         this.deleteList = array.map(item => item.id);

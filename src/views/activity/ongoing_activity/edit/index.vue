@@ -1,67 +1,109 @@
 <template>
   <el-card class="box-card">
     <div slot="header" class="clearfix">
-      <el-page-header @back="cancel" content="活动详情" style="height: 32px;line-height: 32px;"></el-page-header>
+      <el-button v-show="activeName==='details'&& !editFlag" class="float-right" type="primary" icon="el-icon-edit"
+                 @click="edit">编辑
+      </el-button>
+      <el-button v-show="activeName==='details'&& editFlag" class="float-right" type="success" icon="el-icon-check"
+                 @click="saveEdit" :loading="saveLoading">保存
+      </el-button>
+      <el-button v-show="activeName==='details'&& editFlag" class="float-right" type="warning" icon="el-icon-close"
+                 @click="cancelEdit" :loading="saveLoading">取消
+      </el-button>
+      <el-page-header @back="back" content="活动详情" style="height: 32px;line-height: 32px;"></el-page-header>
     </div>
     <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
       <el-tab-pane label="活动详情" name="details">
-        <el-form :model="form" class="addActivity" :rules="rules" ref="Form" label-width="7rem" hide-required-asterisk>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="活动名称">
-                <span>{{this.form.title}}</span>
-              </el-form-item>
-              <el-form-item label="联系方式">
-                <span>{{this.form.phone}}</span>
-              </el-form-item>
-              <el-form-item label="负责人">
-                <span>{{this.form.name}}</span>
-              </el-form-item>
-              <el-form-item label="活动地点">
-                <span>{{this.form.address}}</span>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="是否收费">
-                <el-switch
-                    disabled
-                    v-model="form.isPrice"
-                    active-color="#13ce66">
-                </el-switch>
-              </el-form-item>
-              <el-form-item label="个人费用" v-show="form.isPrice">
-                <span>{{this.form.ownPrice}}</span>
-              </el-form-item>
-              <el-form-item label="团体费用" v-show="form.isPrice">
-                <span>{{this.form.groupPrice}}</span>
-              </el-form-item>
-              <el-form-item label="限报人数">
-                <span>{{this.form.maxNumber}}</span>
-              </el-form-item>
-            </el-col>
+        <el-form :model="form" class="addActivity" :rules="rules" ref="Form"
+                 label-width="7rem" hide-required-asterisk>
+          <div class="loadingShow" v-loading="isTableLoading2">
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="活动名称" prop="title">
+                  <span v-show="!editFlag">{{this.form.title}}</span>
+                  <el-input v-show="editFlag" v-model="form.title"></el-input>
+                </el-form-item>
+                <el-form-item label="联系方式" prop="phone">
+                  <span v-show="!editFlag">{{this.form.phone}}</span>
+                  <el-input v-show="editFlag" v-model="form.phone"></el-input>
+                </el-form-item>
+                <el-form-item label="负责人" prop="name">
+                  <span v-show="!editFlag">{{this.form.name}}</span>
+                  <el-input v-show="editFlag" v-model="form.name"></el-input>
+                </el-form-item>
+                <el-form-item label="活动地点" prop="address">
+                  <span v-show="!editFlag">{{this.form.address}}</span>
+                  <el-input v-show="editFlag" v-model="form.address"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="是否收费" prop="isPrice">
+                  <el-switch
+                      :disabled="!editFlag"
+                      v-model="form.isPrice"
+                      active-color="#13ce66">
+                  </el-switch>
+                </el-form-item>
+                <el-form-item label="个人费用" prop="ownPrice" v-show="form.isPrice">
+                  <span v-show="!editFlag">{{this.form.ownPrice}}</span>
+                  <el-input-number v-show="editFlag" v-model="form.ownPrice" :step="0.01" step-strictly
+                                   controls-position="right"></el-input-number>
+                </el-form-item>
+                <el-form-item label="团体费用" prop="groupPrice" v-show="form.isPrice">
+                  <span v-show="!editFlag">{{this.form.groupPrice}}</span>
+                  <el-input-number v-show="editFlag" v-model="form.groupPrice" :step="0.01" step-strictly
+                                   controls-position="right"></el-input-number>
+                </el-form-item>
+                <el-form-item label="限报人数" prop="maxNumber">
+                  <span v-show="!editFlag">{{this.form.maxNumber}}</span>
+                  <el-input-number v-show="editFlag" v-model="form.maxNumber"
+                                   controls-position="right"></el-input-number>
+                </el-form-item>
+              </el-col>
+              <el-col :span="24">
+                <el-form-item label="活动时间" prop="beginTime">
+                  <span v-show="!editFlag">{{this.form.beginTime | formatDateTime}} 至 </span>
+                  <span v-show="!editFlag">{{this.form.endTime | formatDateTime}}</span>
+                  <el-date-picker
+                      v-show="editFlag"
+                      v-model="ActivityTime"
+                      type="datetimerange"
+                      range-separator="至"
+                      start-placeholder="开始日期"
+                      end-placeholder="结束日期">
+                  </el-date-picker>
+                </el-form-item>
+                <el-form-item label="报名时间" prop="registerBeginTime">
+                  <span v-show="!editFlag">{{this.form.registerBeginTime | formatDateTime}} 至 </span>
+                  <span v-show="!editFlag">{{this.form.registerEndTime | formatDateTime}}</span>
+                  <el-date-picker
+                      v-show="editFlag"
+                      v-model="RegisterTime"
+                      type="datetimerange"
+                      range-separator="至"
+                      start-placeholder="开始日期"
+                      end-placeholder="结束日期">
+                  </el-date-picker>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="24">
+                <el-form-item label="封面图片" prop="cover">
+                  <img v-show="!editFlag" :src="form.cover===''?'':baseUrl+form.cover" alt="">
+                  <activity-cover-uploader-plus
+                      v-show="editFlag" @getImage="getImage"
+                      :imageUrl="form.cover===''?'':baseUrl+form.cover"
+                      ref="coverUploader"></activity-cover-uploader-plus>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </div>
+          <el-row v-loading="isTableLoading2">
             <el-col :span="24">
-              <el-form-item label="活动时间">
-                <span>{{this.form.beginTime | formatDateTime}}</span> 至
-                <span>{{this.form.endTime | formatDateTime}}</span>
-              </el-form-item>
-              <el-form-item label="报名时间">
-                <span>{{this.form.registerBeginTime | formatDateTime}}</span> 至
-                <span>{{this.form.registerEndTime | formatDateTime}}</span>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="24">
-              <el-form-item label="封面图片">
-                <img :src="form.cover===''?'':baseUrl+form.cover" alt="">
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="24">
-              <el-form-item label="活动简介">
-                <div class="watch" v-html="form.content"></div>
-                <!--<custom-editor :editor-key="1" ref="Editor"></custom-editor>-->
+              <el-form-item label="活动简介" prop="content">
+                <div v-show="!editFlag" class="watch" v-html="form.content"></div>
+                <custom-editor v-show="editFlag" :editor-key="2" ref="Editor"></custom-editor>
               </el-form-item>
             </el-col>
           </el-row>
@@ -110,11 +152,13 @@
               </el-table-column>
               <el-table-column align="center" header-align="center" label="操作" fixed="right" width="200">
                 <template slot-scope="scope">
-                  <el-button type="success" icon="el-icon-check" :disabled="scope.row.state===2" @click="activityApplyCheck(scope.row,2)">
+                  <el-button type="success" icon="el-icon-check" :disabled="scope.row.state===2"
+                             @click="activityApplyCheck(scope.row,2)">
                     <span v-if="scope.row.state===2">已</span>
                     通过
                   </el-button>
-                  <el-button type="danger" icon="el-icon-close" :disabled="scope.row.state===0" @click="activityApplyCheck(scope.row,0)">
+                  <el-button type="danger" icon="el-icon-close" :disabled="scope.row.state===0"
+                             @click="activityApplyCheck(scope.row,0)">
                     <span v-if="scope.row.state===0">已</span>
                     拒绝
                   </el-button>
@@ -132,19 +176,20 @@
 
 <script>
   import ActivityCoverUploaderPlus from '../component/cover_uploader';
+  import CustomEditor from '../component/CustomEditor'
   import {validatePhone} from "@/utils/validate";
   import {
     activityApplyCheckApi,
-    addActivityApi,
-    delActivityApi, delApplyCheckApi, downloadActivityApplyApi,
-    pageActivityApi,
+    delApplyCheckApi,
+    downloadActivityApplyApi, editActivityApi,
+    getActivityApi,
     pageActivityApplyApi
   } from "@/api/activity/activity";
-  import CustomEditor from '../component/CustomEditor'
+  import {formatDateTime, isEmpty} from "@/utils/common";
 
   export default {
     name: "EditOngoingActivity",
-    components: {ActivityCoverUploaderPlus},
+    components: {CustomEditor, ActivityCoverUploaderPlus},
     props: {},
     data() {
       return {
@@ -152,16 +197,19 @@
         baseUrl: process.env.VUE_APP_BASE_API,
         activeName: 'details',
         isTableLoading: false,
+        isTableLoading2: false,
         formData: [],
         searchActivityName: '',
         isDeleteMoreDisabled: true,
         deleteList: [],
+        editFlag: false,
+        ActivityTime: [],
+        RegisterTime: [],
+        saveLoading: false,
         form: {
-          ActivityTime: [],
-          RegisterTime: [],
           title: '',
-          beginTime: '',
           maxNumber: '',
+          beginTime: '',
           endTime: '',
           registerBeginTime: '',
           registerEndTime: '',
@@ -179,8 +227,8 @@
           title: {required: true, message: '请输入名称', trigger: 'blur'},
           address: {required: true, message: '请输入地址', trigger: 'blur'},
           name: {required: true, message: '请输入负责人姓名', trigger: 'blur'},
-          ActivityTime: {type: 'array', message: '请选择活动时间', required: true, trigger: 'blur'},
-          RegisterTime: {type: 'array', message: '请选择报名时间', required: true, trigger: 'blur'},
+          beginTime: {message: '请选择活动时间', required: true, trigger: 'change'},
+          registerBeginTime: {message: '请选择报名时间', required: true, trigger: 'change'},
           price: {required: true, message: '请输入价格', trigger: 'blur'},
           phone: {validator: validatePhone, trigger: 'blur'},
           cover: {required: true, message: '请选择封面图片', trigger: 'blur'}
@@ -189,10 +237,70 @@
     },
     mounted() {
       //this.$refs.Editor.setContent(this.form.content);
+      //this.getActivity();
     },
     methods: {
+      edit() {
+        this.editFlag = true;
+      },
+      saveEdit() {
+        this.$refs['Form'].validate((valid) => {
+          if (valid) {
+            this.$msgBox("确定更改该活动信息吗？")
+              .then(response => {
+                this.saveLoading = true;
+                let data = {...this.form};
+                data.content = this.$refs.Editor.getContent();
+                editActivityApi(data).then(response => {
+                  this.saveLoading = false;
+                  this.getActivity();
+                  this.editFlag = false;
+                }).catch(error => {
+                  this.saveLoading = false;
+                });
+              }).catch(error => {
+            })
+          } else {
+            return false;
+          }
+        })
+      },
+      cancelEdit() {
+        this.$msgBox("是否放弃更改改活动信息？")
+          .then(response => {
+            this.editFlag = false;
+            this.getActivity()
+          }).catch(error => {
+        })
+      },
+      getImage(value) {
+        this.form.cover = value;
+        this.$refs.Form.validateField('cover');
+      },
+      getActivity() {
+        this.isTableLoading2 = true;
+        getActivityApi(this.$route.query.id)
+          .then(response => {
+            this.isTableLoading2 = false;
+            this.form = {...response.resultParam.activity};
+            this.$refs.Editor.setContent(this.form.content);
+            this.ActivityTime = [new Date(formatDateTime(this.form.beginTime)), new Date(formatDateTime(this.form.endTime))];
+            this.RegisterTime = [new Date(formatDateTime(this.form.registerBeginTime)), new Date(formatDateTime(this.form.registerEndTime))];
+            if (!isEmpty(this.form.picture)) {
+              let temp = (this.form.picture.split(","));
+              for (let i = 0; i < temp.length; i++) {
+                temp[i] = process.env.VUE_APP_BASE_API + '/' + temp[i]
+              }
+              this.form.picture2 = temp;
+            } else {
+              this.form.picture2 = []
+            }
+          }).catch(error => {
+          this.isTableLoading2 = false;
+        })
+      },
       download() {
-        downloadActivityApplyApi(this.form.id).then(result => {
+        downloadActivityApplyApi(this.$route.query.id).then(result => {
           let blob = new Blob([result]);
           let downloadElement = document.createElement('a');
           let href = window.URL.createObjectURL(blob); //创建下载的链接
@@ -202,12 +310,13 @@
           downloadElement.click(); //点击下载
           document.body.removeChild(downloadElement); //下载完成移除元素
           window.URL.revokeObjectURL(href); //释放掉blob对象
-        }).catch(error => { })
+        }).catch(error => {
+        })
       },
       getActivityApplyList() {
         this.isTableLoading = true;
         let pagination = this.$refs.Pagination;
-        let param = `current=${pagination.current}&size=${pagination.size}&name=${this.searchActivityName}&activityId=${this.form.id}`;
+        let param = `current=${pagination.current}&size=${pagination.size}&name=${this.searchActivityName}&activityId=${this.$route.query.id}`;
         pageActivityApplyApi(param).then(result => {
           this.isTableLoading = false;
           let response = result.resultParam.activityApplyPage;
@@ -236,41 +345,71 @@
           })
         })
       },
-      /*submitForm() {
-        let data = {...this.form};
-        data.content = this.$refs.Editor.getContent();
-        this.$refs.SubmitButton.start();
-        addActivityApi(data).then(() => {
-          this.$refs.SubmitButton.stop();
-          this.$emit('update');
-          this.cancel()
-        }).catch(() => {
-          this.$refs.SubmitButton.stop();
-        })
-      },*/
       activityApplyCheck(row, v) {
         let data = {
-          activityId:row.activityId,
-          ids:row.id,
-          state:v
+          activityId: row.activityId,
+          ids: row.id,
+          state: v
         };
         activityApplyCheckApi(data).then(response => {
-          if (response.status===200){
+          if (response.status === 200) {
             this.getActivityApplyList();
           }
-        }).catch(error => { })
+        }).catch(error => {
+        })
       },
-      cancel() {
+      back() {
+        if (this.editFlag) {
+          this.$msgBox("是否放弃更改改活动信息？")
+            .then(response => {
+              this.backGo()
+            }).catch(error => {
+          })
+        } else {
+          this.backGo()
+        }
+      },
+      backGo() {
+        this.editFlag = false;
         this.$parent.getActivityList();
         this.$parent.editFlag = false;
+        this.$router.push({name: 'ongoing_activity'});
         Object.assign(this.$data.form, this.$options.data().form);
-        //this.$refs['coverUploader'].url = '';
+        this.$refs['coverUploader'].url = '';
         this.$refs['Form'].resetFields();
-        //this.$refs.Editor.setContent();
+        this.$refs.Editor.setContent();
       },
-      handleClick(tab, event) { }
+      handleClick(tab, event) {
+        if (tab.name === "details" && !this.editFlag) {
+          this.getActivity()
+        } else if (tab.name === "participant") {
+          this.getActivityApplyList()
+        }
+      }
     },
-
+    watch: {
+      ActivityTime(v) {
+        if (v && v.length === 2) {
+          this.form.beginTime = formatDateTime(v[0]);
+          this.form.endTime = formatDateTime(v[1]);
+        } else {
+          this.form.beginTime = this.form.endTime = '';
+        }
+      },
+      RegisterTime(v) {
+        if (v && v.length === 2) {
+          this.form.registerBeginTime = formatDateTime(v[0]);
+          this.form.registerEndTime = formatDateTime(v[1]);
+        } else {
+          this.form.registerBeginTime = this.form.registerEndTime = '';
+        }
+      },
+      'form.isPrice'(v) {
+        if (!v) this.form.ownPrice = this.form.groupPrice = 0;
+      },
+      immediate: true,
+      deep: true
+    },
   }
 </script>
 
@@ -278,15 +417,21 @@
   .addActivity {
     padding: 20px 0;
 
-    .watch{
-      border: 1px solid rgba(200,200,200,0.8);
+    .el-range-editor--small.el-input__inner {
+      width: 100%;
+    }
+
+    .watch {
+      border: 1px solid rgba(200, 200, 200, 0.8);
       border-radius: 5px;
       padding: 5px;
-      img{
+
+      img {
         max-width: 100%;
         height: auto;
       }
     }
+
     .el-range-editor--small.el-input__inner {
       width: 100%;
     }

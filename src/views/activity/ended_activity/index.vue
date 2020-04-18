@@ -17,7 +17,7 @@
               type="selection"
               width="55">
           </el-table-column>
-          <el-table-column  prop="title" label="活动名称"></el-table-column>
+          <el-table-column prop="title" label="活动名称"></el-table-column>
           <el-table-column label="活动开始时间">
             <template slot-scope="scope">
               <span>{{scope.row.beginTime | formatDateTime2}}</span>
@@ -37,9 +37,9 @@
             <template slot-scope="scope">
               <el-button type="primary" icon="el-icon-view" @click="edit(scope.row)"></el-button>
               <delete-button
-                :ref="scope.row.id"
-                :id="scope.row.id"
-                @start="deleteActivity"/>
+                  :ref="scope.row.id"
+                  :id="scope.row.id"
+                  @start="deleteActivity"/>
             </template>
           </el-table-column>
         </el-table>
@@ -91,14 +91,14 @@
         _this.visible = true*/
         this.editFlag = true;
         let _this = this.$refs.EditEndedActivity;
-        if (!isEmpty(obj.picture)){
+        if (!isEmpty(obj.picture)) {
           let temp = (obj.picture.split(","));
-          for (let i=0;i<temp.length;i++){
-            temp[i]=process.env.VUE_APP_BASE_API+'/'+temp[i]
+          for (let i = 0; i < temp.length; i++) {
+            temp[i] = process.env.VUE_APP_BASE_API + '/' + temp[i]
           }
-          obj.picture2=temp;
-        }else{
-          obj.picture2=[]
+          obj.picture2 = temp;
+        } else {
+          obj.picture2 = []
         }
         let temp2 = {...obj};
         objectEvaluate(_this.form, temp2);
