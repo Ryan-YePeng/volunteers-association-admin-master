@@ -13,7 +13,12 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="资助活动:">
-              {{form.activityName ? form.activityName : '无'}}
+              <span v-if="form.activityName">
+                {{form.activityName}}
+                <el-button icon="el-icon-search" type="success" class="ml-15"
+                           @click="check(form.activityId)"></el-button>
+              </span>
+              <span v-else>无</span>
             </el-form-item>
           </el-col>
         </el-row>
@@ -80,14 +85,17 @@
         </el-button>
       </div>
     </div>
+    <activity-detail ref="ActivityDetail"></activity-detail>
   </el-card>
 </template>
 
 <script>
   import {cooperationCheckApi, getCooperationApi} from '@/api/cooperation'
+  import ActivityDetail from '../activity_detail'
 
   export default {
     name: "CooperationDetail",
+    components: {ActivityDetail},
     mounted() {
       this.id = this.$route.query.id;
       this.name = this.$route.params.name;
@@ -101,6 +109,12 @@
       }
     },
     methods: {
+      check(id) {
+        let _this = this.$refs.ActivityDetail;
+        _this.id = id;
+        _this.get();
+        _this.visible = true
+      },
       pass() {
         this.$msgBox('确定通过审核吗？').then(() => {
           cooperationCheckApi({ids: this.id, state: 2}).then(() => {
