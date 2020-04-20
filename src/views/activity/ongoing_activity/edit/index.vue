@@ -117,7 +117,7 @@
       <el-tab-pane label="参与者" name="participant">
         <el-card class="box-card">
           <div slot="header" class="clearfix">
-            <el-input placeholder="输入活动名称搜索" v-model="searchActivityName" clearable class="w-200"
+            <el-input placeholder="输入姓名搜索" v-model="searchActivityName" clearable class="w-200"
                       @keyup.enter.native="getActivityApplyList"/>
             <el-button type="success" class="el-icon-search ml-5" @click="getActivityApplyList">搜索</el-button>
             <el-button class="float-right" type="danger" icon="el-icon-delete" @click="delMoreApplyCheck">批量删除
