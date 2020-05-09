@@ -26,7 +26,7 @@
 
 <script>
   import {addPictureApi} from '@/api/operation'
-  import UploadPicture from './uploadPicture'
+  import UploadPicture from './uploadPicturePlus'
 
   export default {
     name: "AddSlideshow",
