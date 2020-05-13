@@ -34,7 +34,9 @@
         <el-table-column prop="name" label="资助方"></el-table-column>
         <el-table-column prop="way" label="资助类型">
           <template slot-scope="scope">
-            {{scope.row.way === 0 ? '资金' : '物资'}}
+            {{scope.row.way === 0 ? '资金' : ''}}
+            {{scope.row.way === 1 ? '物资' : ''}}
+            {{scope.row.way === 2 ? '其他' : ''}}
           </template>
         </el-table-column>
         <el-table-column prop="phone" label="电话"></el-table-column>

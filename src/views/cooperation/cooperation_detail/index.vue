@@ -39,7 +39,9 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="资助方式:">
-              {{form.way === 0 ? '资金' : '物资'}}
+              {{form.way === 0 ? '资金' : ''}}
+              {{form.way === 1 ? '资金' : ''}}
+              {{form.way === 2 ? '其他' : ''}}
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -51,7 +53,13 @@
 
         <el-row>
           <el-col :span="12">
-            <el-form-item :label="form.way === 0 ? '资金' : '物资'">
+            <el-form-item v-if="form.way===0" label="资金">
+              {{form.wayContent}}
+            </el-form-item>
+            <el-form-item v-if="form.way===1" label="物资">
+              {{form.wayContent}}
+            </el-form-item>
+            <el-form-item v-if="form.way===2" label="其他">
               {{form.wayContent}}
             </el-form-item>
           </el-col>
