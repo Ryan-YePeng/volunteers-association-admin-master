@@ -1,12 +1,13 @@
 <template>
   <el-card class="box-card">
     <div slot="header" class="clearfix">
-      <el-select v-model="searchType" @change="listPicture">
+     <!-- <el-select v-model="searchType" @change="listPicture">
         <el-option label="活动信息" value="0"></el-option>
         <el-option label="同城约跑" value="1"></el-option>
         <el-option label="合作交流" value="2"></el-option>
       </el-select>
-      <el-button type="success" class="el-icon-search ml-5" @click="listPicture">搜索</el-button>
+      <el-button type="success" class="el-icon-search ml-5" @click="listPicture">搜索</el-button>-->
+      <span style="line-height: 32px;font-size: 18px;">轮播图信息</span>
       <el-button type="primary" class="el-icon-plus float-right" @click="add">新增</el-button>
     </div>
     <div>

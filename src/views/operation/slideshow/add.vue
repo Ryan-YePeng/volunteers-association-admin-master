@@ -6,13 +6,13 @@
       :close-on-click-modal="false"
       :visible.sync="visible">
     <el-form :model="form" :rules="rules" ref="Form" label-width="150px" hide-required-asterisk>
-      <el-form-item label="轮播图位置">
+     <!-- <el-form-item label="轮播图位置">
         <el-select v-model="form.type">
           <el-option label="活动信息" value="0"></el-option>
           <el-option label="同城约跑" value="1"></el-option>
           <el-option label="合作交流" value="2"></el-option>
         </el-select>
-      </el-form-item>
+      </el-form-item>-->
       <el-form-item label="名称" prop="name">
         <upload-picture ref="UploadPicture" @getImage="getImage"></upload-picture>
       </el-form-item>

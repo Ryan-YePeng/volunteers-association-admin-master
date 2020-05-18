@@ -7,7 +7,7 @@
         <el-button type="success" class="el-icon-search ml-5" @click="getActivityList">搜索</el-button>
         <el-button class="float-right" type="primary" icon="el-icon-plus" @click="add">新增</el-button>
         <el-button class="float-right" type="danger" icon="el-icon-delete" @click="deleteMoreActivity">批量删除</el-button>
-        <el-button class="float-right" type="warning" icon="el-icon-download" @click="deleteActivity">导出</el-button>
+        <el-button class="float-right" type="warning" icon="el-icon-download" @click="downloadActivity">导出</el-button>
       </div>
       <div class="">
         <el-table
@@ -67,7 +67,13 @@
 </template>
 
 <script>
-  import {getActivityApi, delActivityApi, pageActivityApi} from '@/api/activity/activity'
+  import {
+    getActivityApi,
+    delActivityApi,
+    pageActivityApi,
+    downloadActivityApplyApi,
+    downloadActivityApi
+  } from '@/api/activity/activity'
   import AddOngoingActivity from './add/index'
   import EditOngoingActivity from './edit/index'
   import {objectEvaluate} from "@/utils/common";
@@ -145,6 +151,19 @@
             this.getActivityList();
           })
         })
+      },
+      downloadActivity(){
+        downloadActivityApi().then(result => {
+          let blob = new Blob([result]);
+          let downloadElement = document.createElement('a');
+          let href = window.URL.createObjectURL(blob); //创建下载的链接
+          downloadElement.href = href;
+          downloadElement.download = '活动信息.xls'; //下载后文件名
+          document.body.appendChild(downloadElement);
+          downloadElement.click(); //点击下载
+          document.body.removeChild(downloadElement); //下载完成移除元素
+          window.URL.revokeObjectURL(href); //释放掉blob对象
+        }).catch(error => { })
       }
     }
   }
