@@ -4,12 +4,12 @@
       <!-- 菜单 -->
       <admin-menu v-if="isVertical" :isCollapse="isCollapse" :isSmall="isSmall"></admin-menu>
       <el-drawer
-              v-if="isVertical"
-              :class="[isNight ? 'night-drawer-menu' : 'light-drawer-menu']"
-              :destroy-on-close="true"
-              :visible.sync="isShowDrawerMenu"
-              direction="ltr"
-              :with-header="false">
+          v-if="isVertical"
+          :class="[isNight ? 'night-drawer-menu' : 'light-drawer-menu']"
+          :destroy-on-close="true"
+          :visible.sync="isShowDrawerMenu"
+          direction="ltr"
+          :with-header="false">
         <admin-menu/>
       </el-drawer>
       <el-container>
@@ -31,13 +31,16 @@
         </el-header>
         <!-- 内容 -->
         <el-main class="main">
-          <scroll-pane ref="ScrollPane" :isUseGoBackTop="true">
-            <transition name="Ryan-animation">
-              <keep-alive :include="cache">
-                <router-view :key="key"/>
-              </keep-alive>
+          <keep-alive :include="cache">
+            <router-view :key="key"/>
+          </keep-alive>
+          <div class="go-back-top">
+            <transition name="el-fade-in">
+              <div class="page-up" v-show="isShowBackTop">
+                <i class="el-icon-caret-top" @click="backTop"></i>
+              </div>
             </transition>
-          </scroll-pane>
+          </div>
         </el-main>
         <el-footer class="footer" v-show="isShowFooter">
           <div class="footer-text">
@@ -50,7 +53,7 @@
 </template>
 
 <script>
-  import ScrollPane from './ScrollPane'
+  import $ from 'jquery'
   import AdminMenu from './AdminMenu'
   import Breadcrumb from './Breadcrumb'
   import NavBar from './NavBar'
@@ -59,12 +62,13 @@
 
   export default {
     name: 'Layout',
-    components: {ScrollPane, NavBar, AdminMenu, Breadcrumb, Tag},
+    components: {NavBar, AdminMenu, Breadcrumb, Tag},
     data() {
       return {
         isCollapse: false,
         isSmall: false,
         isShowDrawerMenu: false,
+        isShowBackTop: false,
         cacheViews: 'home'
       }
     },
@@ -101,9 +105,13 @@
     methods: {
       // 事件监听
       initialListener() {
+        const _this = this;
         window.addEventListener('resize', () => {
           this.getWindowWidth()
-        })
+        });
+        document.querySelector(".main").addEventListener("scroll", function () {
+          _this.getScrollTop(this);
+        });
       },
       // 获取屏幕宽度
       getWindowWidth() {
@@ -114,6 +122,15 @@
           this.isSmall = false;
           this.isShowDrawerMenu = false
         }
+      },
+      // 获取滚动高度
+      getScrollTop(obj) {
+        obj.scrollTop >= 100
+          ? (this.isShowBackTop = true)
+          : (this.isShowBackTop = false)
+      },
+      backTop(delay = 500) {
+        $(".main").animate({scrollTop: 0}, delay);
       },
       // 显示抽屉菜单
       showDrawerMenu() {
@@ -165,33 +182,46 @@
     }
 
     .main {
-      padding: 0;
+      padding: 15px;
       background-color: $main-bg-color;
-      overflow: hidden;
-
-      .__view {
-        padding: 15px;
-
-        .Ryan-animation-enter-active {
-          transition: all .5s .6s;
-        }
-
-        .Ryan-animation-leave-active {
-          transition: all .5s;
-        }
-
-        .Ryan-animation-enter {
-          transform: translateX(-30px);
-          opacity: 0;
-        }
-
-        .Ryan-animation-leave-to {
-          transform: translateX(30px);
-          opacity: 0;
-        }
-      }
+      overflow-x: hidden;
+      overflow-y: auto;
     }
 
+    .go-back-top {
+      .page-up {
+        background-color: #409eff;
+        position: fixed;
+        right: 16px;
+        bottom: $footer-height + 1 + 10;
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: .3s;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, .5);
+        opacity: .5;
+        z-index: 3000;
+      }
+
+      .el-icon-caret-top {
+        color: #fff;
+        display: block;
+        line-height: 40px;
+        text-align: center;
+        font-size: 18px;
+      }
+
+      p {
+        display: none;
+        text-align: center;
+        color: #fff;
+      }
+
+      .page-up:hover {
+        opacity: 1;
+      }
+    }
 
     .footer {
       padding: 0;

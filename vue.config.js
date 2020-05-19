@@ -1,3 +1,4 @@
+const webpack = require("webpack");
 const settings = require("./src/settings");
 const CompressionWebpackPlugin = require("compression-webpack-plugin");
 const resolve = dir => require("path").join(__dirname, dir);
@@ -20,6 +21,13 @@ module.exports = {
     // 开启 gzip 压缩
     // 需要 npm i -D compression-webpack-plugin
     const plugins = [];
+    plugins.push(
+      new webpack.ProvidePlugin({
+        $: "jquery",
+        jQuery: "jquery",
+        "windows.jQuery": "jquery"
+      })
+    );
     if (NODE_ENV === "production" && isOpenGzip) {
       plugins.push(
         new CompressionWebpackPlugin({
