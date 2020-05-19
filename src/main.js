@@ -21,14 +21,10 @@ import './utils/filter';
 import '@riophae/vue-treeselect/dist/vue-treeselect.css';
 // svg
 import './assets/icons';
-// 代码高亮
-import VueHighlightJS from 'vue-highlightjs'
-import 'highlight.js/styles/atom-one-dark.css'
 // App
 import App from "./App.vue";
 
 Vue.use(EVueContextmenu);
-Vue.use(VueHighlightJS);
 Vue.component('vue-scroll', vuescroll);
 
 Vue.config.productionTip = false;
