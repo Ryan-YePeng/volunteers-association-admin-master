@@ -39,7 +39,7 @@
     </div>
     <!--  底部  -->
     <div v-if="isShowFooter" id="el-login-footer">
-      <span>{{footerTxt}} ⋅ {{caseNumber}}</span>
+      <a href="http://www.beianbeian.com/beianxinxi/7bea2ce1a910b62d8bc000579bc6f44f.html" style="text-decoration: none;color: #e8d5d5;">{{footerTxt}} ⋅ {{caseNumber}}</a>
     </div>
   </div>
 </template>
