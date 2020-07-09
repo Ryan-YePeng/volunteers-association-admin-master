@@ -26,6 +26,7 @@ import App from "./App.vue";
 
 Vue.use(EVueContextmenu);
 Vue.component('vue-scroll', vuescroll);
+Vue.prototype.$fileSaver = require('file-saver');
 
 Vue.config.productionTip = false;
 
