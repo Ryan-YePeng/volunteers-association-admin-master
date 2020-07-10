@@ -1,10 +1,9 @@
 const webpack = require("webpack");
 const settings = require("./src/settings");
 const resolve = dir => require("path").join(__dirname, dir);
-const NODE_ENV = process.env.NODE_ENV;
 
 module.exports = {
-  publicPath: NODE_ENV === "production" && settings.isHistory ? "/" : "./",
+  publicPath: settings.isHistory ? "/" : "./",
   outputDir: "dist",
   assetsDir: "static",
   indexPath: "index.html",
@@ -48,7 +47,7 @@ module.exports = {
     }
   },
   devServer: {
-    open: process.platform === "darwin",
+    open: false,
     host: "0.0.0.0",
     port: 8088,
     https: false,
