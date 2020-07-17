@@ -47,6 +47,8 @@
           statusbar: false, // 隐藏编辑器底部的状态栏
           elementpath: false, // 禁用下角的当前标签路径
           paste_data_images: true, // 允许粘贴图像
+          relative_urls: false,
+          remove_script_host: true,
           toolbar: [
             "bold italic underline |formatselect | fontsizeselect | alignleft aligncenter alignright alignjustify | outdent indent |codeformat blockformats | removeformat undo redo ",
             "bullist numlist toc pastetext|lists image table | searchreplace fullscreen"
@@ -57,7 +59,7 @@
     },
     computed: {
       pictureBaseUrl() {
-        return process.env.VUE_APP_BASE_API + '/';
+        return process.env.VUE_APP_BASE_API;
       }
     },
     mounted() {
