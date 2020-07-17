@@ -142,7 +142,6 @@
     },
     methods: {
       submitForm() {
-
         this.$refs['Form'].validate((valid) => {
           if (valid) {
             let data = {...this.form};

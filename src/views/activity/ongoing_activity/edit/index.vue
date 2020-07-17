@@ -103,7 +103,7 @@
             <el-col :span="24">
               <el-form-item label="活动简介" prop="content">
                 <div v-show="!editFlag" class="watch" v-html="form.content"></div>
-                <custom-editor v-show="editFlag" :editor-key="2" ref="Editor"></custom-editor>
+                <custom-editor v-show="editFlag" :editor-key="1" ref="Editor"></custom-editor>
               </el-form-item>
             </el-col>
           </el-row>
