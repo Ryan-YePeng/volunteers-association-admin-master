@@ -19,6 +19,7 @@ module.exports = {
       })
     );
     config.plugins = [...config.plugins, ...plugins];
+    config.name = settings.title;
   },
   chainWebpack: config => {
     config.resolve.symlinks(true); // 修复HMR
@@ -54,7 +55,7 @@ module.exports = {
     hotOnly: false,
     proxy: {
       "/api": {
-        target: "http://192.168.0.136:8082/",
+        target: "http://192.168.0.104:8082/",
         changeOrigin: true,
         pathRewrite: {
           "^/api": ""
