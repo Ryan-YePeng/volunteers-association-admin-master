@@ -38,11 +38,11 @@
           <span v-if="scope.row.userDetail.priceId==2">会长</span>
         </template>
       </el-table-column>
-      <el-table-column label="缴费金额">
-        <template slot-scope="scope">
-          <span>{{scope.row.userDetail.price}}</span>
-        </template>
-      </el-table-column>
+      <!--<el-table-column label="缴费金额">-->
+      <!--  <template slot-scope="scope">-->
+      <!--    <span>{{scope.row.userDetail.price}}</span>-->
+      <!--  </template>-->
+      <!--</el-table-column>-->
       <el-table-column label="是否缴费">
         <template slot-scope="scope">
           <span v-if="scope.row.isPay"><el-tag type="success">是</el-tag></span>
