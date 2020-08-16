@@ -109,7 +109,7 @@ export function validateIP(rule, value, callback) {
 
 /* 是否手机号码或者固话*/
 export function validatePhoneTwo(rule, value, callback) {
-  const reg = /^((0\d{2,3}-\d{7,8})|(1[34578]\d{9}))$/;
+  const reg = /^((0\d{2,3}-\d{7,8})|(1[3456789]\d{9}))$/;
   if (value === '' || value === undefined || value == null) {
     callback()
   } else {
@@ -137,7 +137,7 @@ export function validateTelephone(rule, value, callback) {
 
 /* 是否手机号码*/
 export function validatePhone(rule, value, callback) {
-  const reg = /^[1][3,4,5,7,8][0-9]{9}$/;
+  const reg = /^[1][3456789][0-9]{9}$/;
   if (value === '' || value === undefined || value == null) {
     if (value === '') {
       callback(new Error('请输入手机号码'))
