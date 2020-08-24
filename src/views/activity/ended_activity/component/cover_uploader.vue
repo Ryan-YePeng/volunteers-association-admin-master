@@ -30,7 +30,7 @@
     },
     data() {
       return {
-        limit: 9,
+        limit: 16,
         accept: ".jpg, .png",
         fileList: []
       };
