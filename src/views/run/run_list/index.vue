@@ -19,16 +19,21 @@
     <div>
       <el-table v-loading="isTableLoading" :data="formData" @selection-change="getSelected">
         <el-table-column type="selection" width="55"></el-table-column>
-        <el-table-column prop="name" label="发起者"></el-table-column>
-        <el-table-column prop="phone" label="电话"></el-table-column>
-        <el-table-column prop="number" label="报名人数"></el-table-column>
-        <el-table-column prop="maxNumber" label="限报人数"></el-table-column>
-        <el-table-column prop="place" label="地点"></el-table-column>
-        <el-table-column prop="time" label="时间">
+        <el-table-column prop="time" label="发布时间">
           <template slot-scope="scope">
             <span>{{scope.row.createTime | formatDateTime}}</span>
           </template>
         </el-table-column>
+        <el-table-column prop="name" label="发起者"></el-table-column>
+        <el-table-column prop="phone" label="电话"></el-table-column>
+        <el-table-column prop="number" label="报名人数"></el-table-column>
+        <el-table-column prop="maxNumber" label="限报人数"></el-table-column>
+        <el-table-column prop="time" label="活动时间">
+          <template slot-scope="scope">
+            <span>{{scope.row.time | formatDateTime}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="place" label="活动地点"></el-table-column>
         <el-table-column label="操作" fixed="right" align="center" width="150">
           <template slot-scope="scope">
             <delete-button
