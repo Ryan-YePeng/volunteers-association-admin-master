@@ -143,10 +143,11 @@
               </el-table-column>
               <el-table-column align="center" header-align="center" prop="number" label="参与人数"></el-table-column>
               <el-table-column align="center" header-align="center" prop="unit" label="公司/单位"></el-table-column>
-              <el-table-column label="是否已缴费" v-if="form.isPrice">
+              <el-table-column label="缴费状态" v-if="form.isPrice">
                 <template slot-scope="scope">
-                  <span v-if="scope.row.payState===2"><el-tag type="success">是</el-tag></span>
-                  <span v-else><el-tag type="danger">否</el-tag></span>
+                  <span v-if="scope.row.payState===2"><el-tag type="success">已支付</el-tag></span>
+                  <span v-else-if="scope.row.payState===1"><el-tag type="success">支付中</el-tag></span>
+                  <span v-else-if="scope.row.payState===0"><el-tag type="success">支付失败</el-tag></span>
                 </template>
               </el-table-column>
               <el-table-column align="center" header-align="center" prop="state" label="状态">
