@@ -143,9 +143,9 @@
               </el-table-column>
               <el-table-column align="center" header-align="center" prop="number" label="参与人数"></el-table-column>
               <el-table-column align="center" header-align="center" prop="unit" label="公司/单位"></el-table-column>
-              <el-table-column label="是否缴费" v-if="form.isPrice">
+              <el-table-column label="是否已缴费" v-if="form.isPrice">
                 <template slot-scope="scope">
-                  <span v-if="scope.row.payState"><el-tag type="success">是</el-tag></span>
+                  <span v-if="scope.row.payState===2"><el-tag type="success">是</el-tag></span>
                   <span v-else><el-tag type="danger">否</el-tag></span>
                 </template>
               </el-table-column>
