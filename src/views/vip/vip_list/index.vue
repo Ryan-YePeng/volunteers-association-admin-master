@@ -1,7 +1,9 @@
 <template>
   <el-card class="box-card">
     <div slot="header" class="clearfix">
-      <el-input placeholder="输入电话搜索" v-model="searchUsername" clearable class="w-200"
+      <el-input placeholder="输入用户名搜索" v-model="searchNickName" clearable class="w-200"
+                @keyup.enter.native="getUserList"/>
+      <el-input placeholder="输入电话搜索" v-model="searchUsername" clearable class="w-200 ml-5"
                 @keyup.enter.native="getUserList"/>
       <el-button type="success" class="el-icon-search ml-5" @click="getUserList">搜索</el-button>
       <el-button
@@ -89,12 +91,11 @@
   import {getUserListApi, downloadUserApi, updatePriceApi} from '@/api/vip'
   import {deleteUserApi} from '@/api/user'
 
-  var FileSaver = require('file-saver');
-
   export default {
     name: "VipList",
     data() {
       return {
+        searchNickName: '',
         searchUsername: '',
         formData: [],
         isTableLoading: false,
@@ -110,7 +111,7 @@
       getUserList() {
         this.isTableLoading = true;
         let pagination = this.$refs.Pagination;
-        let param = `current=${pagination.current}&size=${pagination.size}&deptId=&username=${this.searchUsername}&state=2`;
+        let param = `current=${pagination.current}&size=${pagination.size}&deptId=&nickName=${this.searchNickName}&username=${this.searchUsername}&state=2`;
         getUserListApi(param).then(result => {
           this.isTableLoading = false;
           let response = result.resultParam.userList;
