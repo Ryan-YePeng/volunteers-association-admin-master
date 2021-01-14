@@ -1,4 +1,4 @@
-const formatTime = require('silly-datetime');
+import {format} from "@/utils/format";
 
 /**
  * @param value
@@ -21,7 +21,7 @@ export const isEmpty = value => {
  * */
 export const formatDate = time => {
   if (!time) return '';
-  return formatTime.format(time, 'YYYY-MM-DD');
+  return format(time, 'YYYY-MM-DD');
 };
 
 /**
@@ -31,7 +31,7 @@ export const formatDate = time => {
  * */
 export const formatDateTime = time => {
   if (!time) return '';
-  return formatTime.format(time, 'YYYY-MM-DD HH:mm:ss');
+  return format(time, 'YYYY-MM-DD HH:mm:ss');
 };
 
 /**

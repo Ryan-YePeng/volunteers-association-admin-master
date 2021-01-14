@@ -1,7 +1,6 @@
 import Vue from "vue";
 import {isEmpty} from "@/utils/common";
-
-const formatTime = require('silly-datetime');
+import {format} from "@/utils/format";
 
 /**
  * @description 过滤时间
@@ -9,7 +8,7 @@ const formatTime = require('silly-datetime');
  **/
 Vue.filter("formatDate", function (time) {
   if (!time) return '';
-  return formatTime.format(time, 'YYYY-MM-DD');
+  return format(time, 'YYYY-MM-DD');
 });
 
 /**
@@ -18,7 +17,7 @@ Vue.filter("formatDate", function (time) {
  **/
 Vue.filter("formatDateTime", function (time) {
   if (!time) return '';
-  return formatTime.format(time, 'YYYY-MM-DD HH:mm:ss');
+  return format(time, 'YYYY-MM-DD HH:mm:ss');
 });
 
 /**
@@ -27,7 +26,7 @@ Vue.filter("formatDateTime", function (time) {
  **/
 Vue.filter("formatDateTime2", function (time) {
   if (!time) return '';
-  return formatTime.format(time, 'YYYY-MM-DD HH:mm');
+  return format(time, 'YYYY-MM-DD HH:mm');
 });
 
 /**
